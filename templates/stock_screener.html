@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}">
+    <title>智能分析</title>
+    <style>
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        .analysis-grid .full-row {
+            grid-column: 1 / -1;
+        }
+        .analysis-output {
+            min-height: 220px;
+        }
+        .analysis-bar {
+            height: 4px;
+            background: #dbe3f3;
+            position: relative;
+            overflow: hidden;
+        }
+        .analysis-bar::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--p, 0%);
+            background: linear-gradient(90deg, #4db0ff, #2f6cdf);
+            transition: width .35s ease;
+        }
+        .analysis-bar.running::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent);
+            animation: barShine 1.2s linear infinite;
+        }
+        .analysis-text {
+            padding: 14px;
+            white-space: pre-wrap;
+            line-height: 1.7;
+            font-size: 15px;
+            overflow: auto;
+            font-family: "Times New Roman", "Songti SC", serif;
+        }
+        .analysis-text .key {
+            font-weight: 700;
+            font-style: italic;
+        }
+        .analysis-text .bullet {
+            margin: 2px 0;
+        }
+        .analysis-meta {
+            color: #5f739b;
+            font-size: 13px;
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .decision-headline {
+            margin: 10px 14px 0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #eef4ff;
+            color: #1e3a8a;
+            font-weight: 700;
+        }
+        .analysis-error {
+            display: none;
+            color: #b42318;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .evidence-table-wrap {
+            max-height: 320px;
+            overflow: auto;
+            border: 1px solid #d8dee9;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .evidence-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 520px;
+        }
+        .evidence-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: #eef3fb;
+        }
+        .evidence-table th,
+        .evidence-table td {
+            border-bottom: 1px solid #e8edf4;
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        @keyframes barShine {
+            to { transform: translateX(100%); }
+        }
+        @media (max-width: 960px) {
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+            .analysis-grid .full-row {
+                grid-column: auto;
+            }
+            .evidence-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="has-nav">
+    <header class="top-nav">
+        <div class="brand">📈 股票分析系统</div>
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}">首页</a>
+            <a href="{{ url_for('stock_list') }}">股票列表</a>
+            <a href="{{ url_for('trend_predict') }}">趋势预测</a>
+            <a href="{{ url_for('backtest_page') }}">策略回测</a>
+            <a href="{{ url_for('stock_screener') }}">智能分析</a>
+            <a href="{{ url_for('tutorial') }}">系统说明</a>
+        </nav>
+        <div class="nav-actions">
+            <span class="status-pill">已登录</span>
+            <a href="{{ url_for('logout') }}" class="ghost-link">退出</a>
+        </div>
+    </header>
+
+    <div class="container page-block">
+        <h1>智能分析</h1>
+        <p>新闻面与技术面并行分析，随后看涨/看跌辩论，最后输出决策建议。</p>
+
+        <form id="analysisForm" class="screener-form">
+            <div class="trend-grid">
+                <div>
+                    <label>行业代码</label>
+                    <input name="industry_code" value="{{ form_data.industry_code }}" placeholder="801011.SI" required>
+                </div>
+                <div>
+                    <label>交易日（可空）</label>
+                    <input name="trade_date" value="{{ form_data.trade_date }}" placeholder="YYYYMMDD">
+                </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <label>附加新闻文本（可选）</label>
+                <textarea name="news_text" rows="3" placeholder="粘贴临时新闻补充">{{ form_data.news_text }}</textarea>
+            </div>
+            <div class="auth-links">
+                <button id="runBtn" type="submit">开始分析</button>
+                <span id="runState" class="status-pill">待启动</span>
+            </div>
+            <div class="analysis-meta">默认交易日：{{ form_data.resolved_trade_date }} | LLM_MODEL：{{ llm_env.model if llm_env.model else '-' }}</div>
+            <div id="errorBox" class="analysis-error"></div>
+        </form>
+
+        <section id="analysisStageGrid" class="analysis-grid" style="margin-top: 14px;">
+            <div class="factor-panel analysis-output">
+                <div class="panel-title">技术面研究员 <span id="tag_technical_report" class="status-pill">待执行</span></div>
+                <div id="bar_technical_report" class="analysis-bar" style="--p:0%;"></div>
+                <div id="body_technical_report" class="analysis-text">等待开始...</div>
+            </div>
+
+            <div class="factor-panel analysis-output">
+                <div class="panel-title">新闻面研究员 <span id="tag_news_report" class="status-pill">待执行</span></div>
+                <div id="bar_news_report" class="analysis-bar" style="--p:0%;"></div>
+                <div id="body_news_report" class="analysis-text">等待开始...</div>
+            </div>
+
+            <div class="factor-panel analysis-output">
+                <div class="panel-title">看涨辩手 <span id="tag_bull_case" class="status-pill">待执行</span></div>
+                <div id="bar_bull_case" class="analysis-bar" style="--p:0%;"></div>
+                <div id="body_bull_case" class="analysis-text">等待上游分析完成...</div>
+            </div>
+
+            <div class="factor-panel analysis-output">
+                <div class="panel-title">看跌辩手 <span id="tag_bear_case" class="status-pill">待执行</span></div>
+                <div id="bar_bear_case" class="analysis-bar" style="--p:0%;"></div>
+                <div id="body_bear_case" class="analysis-text">等待上游分析完成...</div>
+            </div>
+
+            <div class="factor-panel analysis-output full-row">
+                <div class="panel-title">最终决策建议 <span id="tag_final_decision" class="status-pill">待执行</span></div>
+                <div id="bar_final_decision" class="analysis-bar" style="--p:0%;"></div>
+                <div id="decisionHeadline" class="decision-headline">Action: - | Confidence: -</div>
+                <div id="body_final_decision" class="analysis-text">等待辩论结束...</div>
+                <div id="metaLine" class="analysis-meta"></div>
+            </div>
+        </section>
+
+        <section class="factor-panel" style="margin-top: 14px;">
+            <div class="panel-title">分析依据（技术指标 / 新闻）</div>
+            <div class="evidence-grid" style="padding: 12px;">
+                <div>
+                    <h4 style="margin: 0 0 8px; color: #2d477d;">技术指标</h4>
+                    <div class="evidence-table-wrap">
+                        <table class="evidence-table">
+                            <thead>
+                                <tr><th>指标</th><th>数值</th></tr>
+                            </thead>
+                            <tbody id="technicalEvidenceBody">
+                                <tr><td colspan="2">等待分析完成...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 8px; color: #2d477d;">新闻依据（时间 / 来源）</h4>
+                    <div class="evidence-table-wrap">
+                        <table class="evidence-table">
+                            <thead>
+                                <tr><th>时间</th><th>来源</th><th>标题/摘要</th></tr>
+                            </thead>
+                            <tbody id="newsEvidenceBody">
+                                <tr><td colspan="3">等待分析完成...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    (function () {
+        try {
+            sessionStorage.removeItem("stock_screener_page_state_v1");
+            sessionStorage.removeItem("stock_screener_page_state_v2");
+            localStorage.removeItem("stock_screener_page_state_v1");
+            localStorage.removeItem("stock_screener_page_state_v2");
+        } catch (e) {}
+        const STATE_KEY = "stock_screener_page_state_v3";
+        const MAX_STAGE_HTML_LEN = 120000;
+        const form = document.getElementById("analysisForm");
+        const runBtn = document.getElementById("runBtn");
+        const runState = document.getElementById("runState");
+        const errorBox = document.getElementById("errorBox");
+        const metaLine = document.getElementById("metaLine");
+        const decisionHeadline = document.getElementById("decisionHeadline");
+        const technicalEvidenceBody = document.getElementById("technicalEvidenceBody");
+        const newsEvidenceBody = document.getElementById("newsEvidenceBody");
+        const stageKeys = ["technical_report", "news_report", "bull_case", "bear_case", "final_decision"];
+        let pollTimer = null;
+        let currentJobId = "";
+
+        function setTag(key, text) {
+            const el = document.getElementById("tag_" + key);
+            if (!el) return;
+            el.textContent = text;
+        }
+
+        function setBar(key, pct, running) {
+            const bar = document.getElementById("bar_" + key);
+            if (!bar) return;
+            bar.style.setProperty("--p", pct + "%");
+            if (running) bar.classList.add("running");
+            else bar.classList.remove("running");
+        }
+
+        function escapeHtml(s) {
+            return String(s)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function formatRichText(text) {
+            const lines = String(text || "").split(/\r?\n/);
+            return lines.map((raw) => {
+                const line = escapeHtml(raw);
+                const m = line.match(/^\s*([A-Za-z_\u4e00-\u9fa5]+)\s*[:：]\s*(.*)$/);
+                if (m) {
+                    return `<div><span class="key">${m[1]}:</span> ${m[2]}</div>`;
+                }
+                if (/^\s*(\d+[\.|\)]|[-*•])\s+/.test(line)) {
+                    return `<div class="bullet"><em>${line}</em></div>`;
+                }
+                return `<div>${line}</div>`;
+            }).join("");
+        }
+
+        function clampText(text, maxLen) {
+            const s = String(text || "");
+            if (s.length <= maxLen) return s;
+            return s.slice(0, maxLen) + "\n\n[内容过长，已截断保存]";
+        }
+
+        function readStateRaw() {
+            try {
+                const s = sessionStorage.getItem(STATE_KEY);
+                if (s) return s;
+            } catch (e) {}
+            try {
+                const s = localStorage.getItem(STATE_KEY);
+                if (s) return s;
+            } catch (e) {}
+            return null;
+        }
+
+        function writeStateRaw(value) {
+            try {
+                sessionStorage.setItem(STATE_KEY, value);
+                try { localStorage.removeItem(STATE_KEY); } catch (e) {}
+                return true;
+            } catch (e) {}
+            try {
+                localStorage.setItem(STATE_KEY, value);
+                return true;
+            } catch (e) {}
+            return false;
+        }
+
+        function collectFormState() {
+            const out = {};
+            Array.prototype.forEach.call(form.elements || [], function (el) {
+                if (!el || !el.name || el.disabled) return;
+                if (el.type === "checkbox" || el.type === "radio") {
+                    out[el.name] = !!el.checked;
+                } else {
+                    out[el.name] = el.value;
+                }
+            });
+            return out;
+        }
+
+        function applyFormState(state) {
+            if (!state) return;
+            Array.prototype.forEach.call(form.elements || [], function (el) {
+                if (!el || !el.name || !(el.name in state)) return;
+                if (el.type === "checkbox" || el.type === "radio") {
+                    el.checked = !!state[el.name];
+                } else {
+                    el.value = state[el.name];
+                }
+            });
+        }
+
+        function savePageState() {
+            try {
+                const stages = {};
+                stageKeys.forEach(function (key) {
+                    const tag = document.getElementById("tag_" + key);
+                    const bar = document.getElementById("bar_" + key);
+                    const body = document.getElementById("body_" + key);
+                    stages[key] = {
+                        tagText: tag ? tag.textContent : "",
+                        barPct: bar ? (bar.style.getPropertyValue("--p") || "0%") : "0%",
+                        barRunning: !!(bar && bar.classList.contains("running")),
+                        bodyHtml: body ? clampText(body.innerHTML, MAX_STAGE_HTML_LEN) : "",
+                    };
+                });
+                const data = {
+                    form: collectFormState(),
+                    runStateText: runState.textContent || "",
+                    errorBoxDisplay: errorBox.style.display || "",
+                    errorBoxText: clampText(errorBox.textContent || "", 4000),
+                    decisionHeadlineHtml: clampText(decisionHeadline.innerHTML || "", 4000),
+                    metaLineHtml: clampText(metaLine.innerHTML || "", 4000),
+                    stages: stages,
+                    technicalEvidenceHtml: clampText(technicalEvidenceBody.innerHTML || "", 60000),
+                    newsEvidenceHtml: clampText(newsEvidenceBody.innerHTML || "", 60000),
+                    scrollY: window.scrollY || 0,
+                };
+                writeStateRaw(JSON.stringify(data));
+            } catch (e) {}
+        }
+
+        function restorePageState() {
+            try {
+                const raw = readStateRaw();
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                applyFormState(data.form || {});
+                runState.textContent = data.runStateText || runState.textContent;
+                errorBox.style.display = data.errorBoxDisplay || "none";
+                errorBox.textContent = data.errorBoxText || "";
+                if (data.decisionHeadlineHtml) decisionHeadline.innerHTML = data.decisionHeadlineHtml;
+                if (data.metaLineHtml) metaLine.innerHTML = data.metaLineHtml;
+                if (data.stages && typeof data.stages === "object") {
+                    stageKeys.forEach(function (key) {
+                        const stage = data.stages[key] || {};
+                        const tag = document.getElementById("tag_" + key);
+                        const bar = document.getElementById("bar_" + key);
+                        const body = document.getElementById("body_" + key);
+                        if (tag && stage.tagText) tag.textContent = stage.tagText;
+                        if (bar) {
+                            bar.style.setProperty("--p", stage.barPct || "0%");
+                            if (stage.barRunning) bar.classList.add("running");
+                            else bar.classList.remove("running");
+                        }
+                        if (body && stage.bodyHtml) body.innerHTML = stage.bodyHtml;
+                    });
+                }
+                if (data.technicalEvidenceHtml) technicalEvidenceBody.innerHTML = data.technicalEvidenceHtml;
+                if (data.newsEvidenceHtml) newsEvidenceBody.innerHTML = data.newsEvidenceHtml;
+                if (typeof data.scrollY === "number") window.scrollTo(0, data.scrollY);
+            } catch (e) {}
+        }
+
+        function setBody(key, value) {
+            const el = document.getElementById("body_" + key);
+            if (!el) return;
+            if (key === "final_decision" && value && typeof value === "object") {
+                const action = value.action || "hold";
+                const confidence = Number(value.confidence || 0) * 100;
+                decisionHeadline.textContent = `Action: ${String(action).toUpperCase()} | Confidence: ${confidence.toFixed(1)}%`;
+                const fullReport = String(value.full_report || "").trim();
+                if (fullReport) {
+                    el.innerHTML = formatRichText(fullReport);
+                } else {
+                    el.innerHTML = formatRichText("未获取到主席完整报告文本。");
+                }
+                return;
+            }
+            if (typeof value === "string" && value.trim()) {
+                el.innerHTML = formatRichText(value);
+            }
+        }
+
+        function renderEvidence(meta) {
+            const indicators = (meta && Array.isArray(meta.technical_indicators)) ? meta.technical_indicators : [];
+            const newsRecords = (meta && Array.isArray(meta.news_records)) ? meta.news_records : [];
+
+            if (!indicators.length) {
+                technicalEvidenceBody.innerHTML = '<tr><td colspan="2">暂无技术指标明细。</td></tr>';
+            } else {
+                technicalEvidenceBody.innerHTML = indicators.map((item) => (
+                    `<tr><td>${escapeHtml(item.name || "")}</td><td>${escapeHtml(item.value || "")}</td></tr>`
+                )).join("");
+            }
+
+            if (!newsRecords.length) {
+                newsEvidenceBody.innerHTML = '<tr><td colspan="3">暂无新闻依据。</td></tr>';
+            } else {
+                newsEvidenceBody.innerHTML = newsRecords.map((item) => (
+                    `<tr>
+                        <td>${escapeHtml(item.dt || "")}</td>
+                        <td>${escapeHtml(item.src || "")}</td>
+                        <td>${escapeHtml(item.title || item.snippet || "")}</td>
+                    </tr>`
+                )).join("");
+            }
+        }
+
+        function resetUI() {
+            errorBox.style.display = "none";
+            errorBox.textContent = "";
+            runBtn.disabled = true;
+            runState.textContent = "运行中";
+            setTag("technical_report", "执行中");
+            setTag("news_report", "执行中");
+            setTag("bull_case", "等待中");
+            setTag("bear_case", "等待中");
+            setTag("final_decision", "等待中");
+
+            setBar("technical_report", 40, true);
+            setBar("news_report", 40, true);
+            setBar("bull_case", 0, false);
+            setBar("bear_case", 0, false);
+            setBar("final_decision", 0, false);
+
+            document.getElementById("body_technical_report").textContent = "技术面分析执行中...";
+            document.getElementById("body_news_report").textContent = "新闻面分析执行中...";
+            document.getElementById("body_bull_case").textContent = "等待技术面和新闻面输出...";
+            document.getElementById("body_bear_case").textContent = "等待看涨辩论输出...";
+            document.getElementById("body_final_decision").textContent = "等待看跌辩论输出...";
+            decisionHeadline.textContent = "Action: - | Confidence: -";
+            savePageState();
+        }
+
+        function updateFromStatus(data) {
+            const stages = data.stages || {};
+            if (data.meta) {
+                const name = data.meta.industry_name || "";
+                const code = data.meta.industry_code || "";
+                const dt = data.meta.trade_date || "";
+                metaLine.textContent = [name ? `${name} (${code})` : code, dt].filter(Boolean).join(" | ");
+                renderEvidence(data.meta);
+            }
+
+            for (const key of stageKeys) {
+                const stage = stages[key] || {};
+                const status = stage.status || "pending";
+                if (status === "done") {
+                    setTag(key, "已完成");
+                    setBar(key, 100, false);
+                    setBody(key, stage.value);
+                }
+            }
+
+            const techDone = stages.technical_report && stages.technical_report.status === "done";
+            const newsDone = stages.news_report && stages.news_report.status === "done";
+            if (techDone && newsDone && stages.bull_case && stages.bull_case.status !== "done") {
+                setTag("bull_case", "执行中");
+                setBar("bull_case", 45, true);
+            }
+            if (stages.bull_case && stages.bull_case.status === "done" && stages.bear_case && stages.bear_case.status !== "done") {
+                setTag("bear_case", "执行中");
+                setBar("bear_case", 45, true);
+            }
+            if (stages.bear_case && stages.bear_case.status === "done" && stages.final_decision && stages.final_decision.status !== "done") {
+                setTag("final_decision", "执行中");
+                setBar("final_decision", 45, true);
+            }
+
+            if (data.status === "done") {
+                runState.textContent = "已完成";
+                runBtn.disabled = false;
+                clearInterval(pollTimer);
+                pollTimer = null;
+            } else if (data.status === "failed") {
+                runState.textContent = "失败";
+                runBtn.disabled = false;
+                errorBox.style.display = "block";
+                errorBox.textContent = data.error || "执行失败";
+                clearInterval(pollTimer);
+                pollTimer = null;
+            }
+            savePageState();
+        }
+
+        async function pollStatus(jobId) {
+            try {
+                const resp = await fetch(`/stock_screener/status/${jobId}`);
+                const data = await resp.json();
+                if (!data.ok) throw new Error(data.error || "status fetch failed");
+                updateFromStatus(data);
+            } catch (err) {
+                runState.textContent = "异常";
+                runBtn.disabled = false;
+                errorBox.style.display = "block";
+                errorBox.textContent = String(err);
+                savePageState();
+                if (pollTimer) {
+                    clearInterval(pollTimer);
+                    pollTimer = null;
+                }
+            }
+        }
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            if (pollTimer) {
+                clearInterval(pollTimer);
+                pollTimer = null;
+            }
+            resetUI();
+            try {
+                const resp = await fetch("{{ url_for('stock_screener_start') }}", {
+                    method: "POST",
+                    body: new FormData(form),
+                });
+                const data = await resp.json();
+                if (!data.ok) throw new Error(data.error || "start failed");
+                currentJobId = data.job_id;
+                await pollStatus(currentJobId);
+                pollTimer = setInterval(() => pollStatus(currentJobId), 1200);
+            } catch (err) {
+                runState.textContent = "异常";
+                runBtn.disabled = false;
+                errorBox.style.display = "block";
+                errorBox.textContent = String(err);
+                savePageState();
+            }
+        });
+
+        restorePageState();
+        window.addEventListener("beforeunload", savePageState);
+        document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === "hidden") savePageState();
+        });
+        document.querySelectorAll(".nav-links a, .feature-btn, .outline-btn").forEach(function (a) {
+            a.addEventListener("click", savePageState);
+        });
+
+    })();
+    </script>
+</body>
+</html>

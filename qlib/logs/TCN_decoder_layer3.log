@@ -1,0 +1,228 @@
+[1015623:MainThread](2025-12-19 16:41:09,843) INFO - qlib.qrun - [run.py:78] - Render the template with the context: {}
+[1015623:MainThread](2025-12-19 16:41:09,866) INFO - qlib.Initialization - [config.py:452] - default_conf: client.
+[1015623:MainThread](2025-12-19 16:41:09,869) INFO - qlib.Initialization - [__init__.py:82] - qlib successfully initialized based on client settings.
+[1015623:MainThread](2025-12-19 16:41:09,869) INFO - qlib.Initialization - [__init__.py:84] - data_path={'__DEFAULT_FREQ': PosixPath('/z5s/morph/home/ljf/qlib/data_provider_bin')}
+/z5s/morph/home/ljf/anaconda3/envs/qlib/lib/python3.10/site-packages/mlflow/tracking/_tracking_service/utils.py:140: FutureWarning: Filesystem tracking backend (e.g., './mlruns') is deprecated. Please switch to a database backend (e.g., 'sqlite:///mlflow.db'). For feedback, see: https://github.com/mlflow/mlflow/issues/18534
+  return FileStore(store_uri, store_uri)
+[1015623:MainThread](2025-12-19 16:41:09,883) INFO - qlib.workflow - [exp.py:258] - Experiment 948686977992697904 starts running ...
+[1015623:MainThread](2025-12-19 16:41:10,333) INFO - qlib.workflow - [recorder.py:345] - Recorder 9b741cc3a0d348ddbd2b72cf54f0c58c starts running under Experiment 948686977992697904 ...
+[1015623:MainThread](2025-12-19 16:41:13,095) INFO - qlib.TCN - [pytorch_tcn_ts.py:63] - TCN pytorch version...
+[1015623:MainThread](2025-12-19 16:41:13,264) INFO - qlib.TCN - [pytorch_tcn_ts.py:86] - TCN parameters setting:
+d_feat : 80
+n_chans : 128
+kernel_size : 5
+num_layers : 2
+dropout : 0.1
+n_epochs : 100
+lr : 0.0005
+metric : 
+batch_size : 512
+early_stop : 10
+optimizer : adam
+loss_type : mse
+device : cuda:0
+n_jobs : 10
+use_GPU : True
+seed : 0
+usenews : True
+fusion_type : decoder
+layer_num : 3
+d_news : 512
+/z5s/morph/home/ljf/anaconda3/envs/qlib/lib/python3.10/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+[1015623:MainThread](2025-12-19 16:41:13,314) INFO - qlib.TCN - [pytorch_tcn_ts.py:146] - model:
+TCNModel(
+  (news_proj): Linear(in_features=512, out_features=80, bias=True)
+  (tcn): TemporalConvNet(
+    (network): Sequential(
+      (0): TemporalBlock(
+        (conv1): Conv1d(80, 128, kernel_size=(5,), stride=(1,), padding=(4,))
+        (chomp1): Chomp1d()
+        (relu1): ReLU()
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (conv2): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(4,))
+        (chomp2): Chomp1d()
+        (relu2): ReLU()
+        (dropout2): Dropout(p=0.1, inplace=False)
+        (net): Sequential(
+          (0): Conv1d(80, 128, kernel_size=(5,), stride=(1,), padding=(4,))
+          (1): Chomp1d()
+          (2): ReLU()
+          (3): Dropout(p=0.1, inplace=False)
+          (4): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(4,))
+          (5): Chomp1d()
+          (6): ReLU()
+          (7): Dropout(p=0.1, inplace=False)
+        )
+        (downsample): Conv1d(80, 128, kernel_size=(1,), stride=(1,))
+        (relu): ReLU()
+      )
+      (1): TemporalBlock(
+        (conv1): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(8,), dilation=(2,))
+        (chomp1): Chomp1d()
+        (relu1): ReLU()
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (conv2): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(8,), dilation=(2,))
+        (chomp2): Chomp1d()
+        (relu2): ReLU()
+        (dropout2): Dropout(p=0.1, inplace=False)
+        (net): Sequential(
+          (0): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(8,), dilation=(2,))
+          (1): Chomp1d()
+          (2): ReLU()
+          (3): Dropout(p=0.1, inplace=False)
+          (4): Conv1d(128, 128, kernel_size=(5,), stride=(1,), padding=(8,), dilation=(2,))
+          (5): Chomp1d()
+          (6): ReLU()
+          (7): Dropout(p=0.1, inplace=False)
+        )
+        (relu): ReLU()
+      )
+    )
+  )
+  (linear): Linear(in_features=128, out_features=1, bias=True)
+  (decoder_layers): CrossAttentionDecoder(
+    (ts_pos): SinusoidalPositionalEncoding()
+    (decoder): TransformerDecoder(
+      (layers): ModuleList(
+        (0-2): 3 x TransformerDecoderLayer(
+          (self_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=80, out_features=80, bias=True)
+          )
+          (multihead_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=80, out_features=80, bias=True)
+          )
+          (linear1): Linear(in_features=80, out_features=320, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=320, out_features=80, bias=True)
+          (norm1): LayerNorm((80,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((80,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((80,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+  )
+)
+[1015623:MainThread](2025-12-19 16:41:13,315) INFO - qlib.TCN - [pytorch_tcn_ts.py:147] - model size: 0.6306 MB
+[1015623:MainThread](2025-12-19 16:41:25,558) INFO - qlib.timer - [log.py:127] - Time cost: 10.615s | Loading data Done
+[1015623:MainThread](2025-12-19 16:41:26,943) INFO - qlib.timer - [log.py:127] - Time cost: 0.916s | RobustZScoreNorm Done
+[1015623:MainThread](2025-12-19 16:41:27,114) INFO - qlib.timer - [log.py:127] - Time cost: 0.170s | Fillna Done
+[1015623:MainThread](2025-12-19 16:41:27,951) INFO - qlib.timer - [log.py:127] - Time cost: 0.254s | DropnaLabel Done
+[1015623:MainThread](2025-12-19 16:41:29,881) INFO - qlib.timer - [log.py:127] - Time cost: 1.928s | CSZScoreNorm Done
+[1015623:MainThread](2025-12-19 16:41:29,885) INFO - qlib.timer - [log.py:127] - Time cost: 4.326s | fit & process data Done
+[1015623:MainThread](2025-12-19 16:41:29,885) INFO - qlib.timer - [log.py:127] - Time cost: 14.944s | Init data Done
+[1015623:MainThread](2025-12-19 16:41:29,896) WARNING - qlib.utils - [__init__.py:849] - The parameter `reweighter` with value `None` is ignored.
+[1015623:MainThread](2025-12-19 16:41:32,234) INFO - qlib.TCN - [pytorch_tcn_ts.py:248] - training...
+[1015623:MainThread](2025-12-19 16:41:32,235) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch0:
+[1015623:MainThread](2025-12-19 16:41:32,236) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+ModuleNotFoundError. CatBoostModel are skipped. (optional: maybe installing CatBoostModel can fix it.)
+ModuleNotFoundError. XGBModel is skipped(optional: maybe installing xgboost can fix it).
+[1015623:MainThread](2025-12-19 16:41:45,165) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:41:55,713) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.988924, valid -0.976971
+[1015623:MainThread](2025-12-19 16:41:55,720) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch1:
+[1015623:MainThread](2025-12-19 16:41:55,721) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:42:08,479) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:42:19,645) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.986023, valid -0.979967
+[1015623:MainThread](2025-12-19 16:42:19,646) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch2:
+[1015623:MainThread](2025-12-19 16:42:19,646) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:42:31,342) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:42:41,357) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.983509, valid -0.983596
+[1015623:MainThread](2025-12-19 16:42:41,358) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch3:
+[1015623:MainThread](2025-12-19 16:42:41,358) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:42:52,876) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:43:02,546) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.976625, valid -0.981747
+[1015623:MainThread](2025-12-19 16:43:02,547) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch4:
+[1015623:MainThread](2025-12-19 16:43:02,547) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:43:13,855) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:43:23,729) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.962181, valid -0.984468
+[1015623:MainThread](2025-12-19 16:43:23,729) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch5:
+[1015623:MainThread](2025-12-19 16:43:23,730) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:43:35,275) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:43:45,133) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.950972, valid -0.987302
+[1015623:MainThread](2025-12-19 16:43:45,134) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch6:
+[1015623:MainThread](2025-12-19 16:43:45,135) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:43:56,247) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:44:06,105) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.918556, valid -0.995557
+[1015623:MainThread](2025-12-19 16:44:06,110) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch7:
+[1015623:MainThread](2025-12-19 16:44:06,111) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:44:17,635) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:44:26,947) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.897778, valid -0.999530
+[1015623:MainThread](2025-12-19 16:44:26,948) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch8:
+[1015623:MainThread](2025-12-19 16:44:26,949) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:44:38,581) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:44:49,306) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.863123, valid -1.001080
+[1015623:MainThread](2025-12-19 16:44:49,307) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch9:
+[1015623:MainThread](2025-12-19 16:44:49,308) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:45:00,802) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:45:11,597) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.813032, valid -1.012693
+[1015623:MainThread](2025-12-19 16:45:11,598) INFO - qlib.TCN - [pytorch_tcn_ts.py:252] - Epoch10:
+[1015623:MainThread](2025-12-19 16:45:11,598) INFO - qlib.TCN - [pytorch_tcn_ts.py:253] - training...
+[1015623:MainThread](2025-12-19 16:45:23,081) INFO - qlib.TCN - [pytorch_tcn_ts.py:255] - evaluating...
+[1015623:MainThread](2025-12-19 16:45:32,976) INFO - qlib.TCN - [pytorch_tcn_ts.py:258] - train -0.769644, valid -1.023677
+[1015623:MainThread](2025-12-19 16:45:32,977) INFO - qlib.TCN - [pytorch_tcn_ts.py:270] - early stop
+[1015623:MainThread](2025-12-19 16:45:32,978) INFO - qlib.TCN - [pytorch_tcn_ts.py:273] - best score: -0.976971 @ 0
+[1015623:MainThread](2025-12-19 16:45:39,759) INFO - qlib.fill_placeholder - [__init__.py:798] - <PRED> lookes like a placeholder, but it can't match to any given values
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+[1015623:MainThread](2025-12-19 16:45:44,364) INFO - qlib.workflow - [record_temp.py:198] - Signal record 'pred.pkl' has been saved as the artifact of the Experiment 948686977992697904
+'The following are prediction results of the TCN model.'
+                          score
+datetime   instrument          
+2024-02-19 801011.SI  -0.006348
+2024-02-20 801011.SI   0.023225
+2024-02-21 801011.SI  -0.013954
+2024-02-22 801011.SI   0.027106
+2024-02-23 801011.SI   0.068544
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 29.82it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 29.67it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 87.88it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 86.76it/s]
+{'IC': np.float64(0.02665313380629385),
+ 'ICIR': np.float64(0.1493772359982976),
+ 'Rank IC': np.float64(0.03192497039070556),
+ 'Rank ICIR': np.float64(0.17047437843908608)}
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 173.30it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 170.02it/s]
+[1015623:MainThread](2025-12-19 16:45:45,106) INFO - qlib.backtest caller - [__init__.py:93] - Create new exchange
+[1015623:MainThread](2025-12-19 16:45:53,477) WARNING - qlib.online operator - [exchange.py:226] - factor.day.bin file not exists or factor contains `nan`. Order using adjusted_price.
+[1015623:MainThread](2025-12-19 16:45:53,477) WARNING - qlib.online operator - [exchange.py:228] - trade unit 100 is not supported in adjusted_price mode.
+[1015623:MainThread](2025-12-19 16:45:54,503) WARNING - qlib.data - [data.py:665] - load calendar error: freq=day, future=True; return current calendar!
+[1015623:MainThread](2025-12-19 16:45:54,504) WARNING - qlib.data - [data.py:668] - You can get future calendar by referring to the following document: https://github.com/microsoft/qlib/blob/main/scripts/data_collector/contrib/README.md
+[1015623:MainThread](2025-12-19 16:45:54,508) WARNING - qlib.BaseExecutor - [executor.py:121] - `common_infra` is not set for <qlib.backtest.executor.SimulatorExecutor object at 0x74717c5930d0>
+backtest loop:   0%|          | 0/313 [00:00<?, ?it/s]/z5s/morph/home/ljf/qlib/qlib/utils/index_data.py:492: RuntimeWarning: Mean of empty slice
+  return np.nanmean(self.data)
+backtest loop:   4%|▍         | 12/313 [00:00<00:02, 118.57it/s]backtest loop:   8%|▊         | 24/313 [00:00<00:02, 112.96it/s]backtest loop:  12%|█▏        | 36/313 [00:00<00:02, 108.67it/s]backtest loop:  15%|█▌        | 47/313 [00:00<00:02, 103.99it/s]backtest loop:  19%|█▊        | 58/313 [00:00<00:02, 97.85it/s] backtest loop:  22%|██▏       | 68/313 [00:00<00:02, 93.94it/s]backtest loop:  25%|██▍       | 78/313 [00:00<00:02, 94.73it/s]backtest loop:  28%|██▊       | 89/313 [00:00<00:02, 95.28it/s]backtest loop:  32%|███▏      | 99/313 [00:01<00:02, 94.51it/s]backtest loop:  35%|███▌      | 110/313 [00:01<00:02, 97.02it/s]backtest loop:  39%|███▊      | 121/313 [00:01<00:01, 96.83it/s]backtest loop:  42%|████▏     | 131/313 [00:01<00:01, 97.54it/s]backtest loop:  45%|████▌     | 142/313 [00:01<00:01, 99.61it/s]backtest loop:  49%|████▊     | 152/313 [00:01<00:01, 97.71it/s]backtest loop:  52%|█████▏    | 162/313 [00:01<00:01, 96.61it/s]backtest loop:  55%|█████▌    | 173/313 [00:01<00:01, 98.32it/s]backtest loop:  58%|█████▊    | 183/313 [00:01<00:01, 97.44it/s]backtest loop:  62%|██████▏   | 193/313 [00:01<00:01, 97.93it/s]backtest loop:  65%|██████▍   | 203/313 [00:02<00:01, 97.55it/s]backtest loop:  68%|██████▊   | 214/313 [00:02<00:01, 96.66it/s]backtest loop:  72%|███████▏  | 225/313 [00:02<00:00, 96.77it/s]backtest loop:  75%|███████▌  | 235/313 [00:02<00:00, 94.01it/s]backtest loop:  79%|███████▊  | 246/313 [00:02<00:00, 97.42it/s]backtest loop:  82%|████████▏ | 257/313 [00:02<00:00, 100.07it/s]backtest loop:  86%|████████▌ | 268/313 [00:02<00:00, 102.14it/s]backtest loop:  89%|████████▉ | 279/313 [00:02<00:00, 99.43it/s] backtest loop:  92%|█████████▏| 289/313 [00:02<00:00, 99.06it/s]backtest loop:  96%|█████████▌| 300/313 [00:03<00:00, 100.30it/s]backtest loop:  99%|█████████▉| 311/313 [00:03<00:00, 99.15it/s] backtest loop: 100%|██████████| 313/313 [00:03<00:00, 98.66it/s]
+[1015623:MainThread](2025-12-19 16:45:57,712) INFO - qlib.workflow - [record_temp.py:515] - Portfolio analysis record 'port_analysis_1day.pkl' has been saved as the artifact of the Experiment 948686977992697904
+[1015623:MainThread](2025-12-19 16:45:57,724) INFO - qlib.workflow - [record_temp.py:540] - Indicator analysis record 'indicator_analysis_1day.pkl' has been saved as the artifact of the Experiment 948686977992697904
+[1015623:MainThread](2025-12-19 16:45:58,056) INFO - qlib.timer - [log.py:127] - Time cost: 0.000s | waiting `async_log` Done
+'The following are analysis results of benchmark return(1day).'
+                       risk
+mean               0.000765
+std                0.018797
+annualized_return  0.182187
+information_ratio  0.628250
+max_drawdown      -0.301693
+'The following are analysis results of the excess return without cost(1day).'
+                       risk
+mean               0.000352
+std                0.005557
+annualized_return  0.083824
+information_ratio  0.977852
+max_drawdown      -0.057754
+'The following are analysis results of the excess return with cost(1day).'
+                       risk
+mean               0.000159
+std                0.005554
+annualized_return  0.037803
+information_ratio  0.441196
+max_drawdown      -0.074893
+'The following are analysis results of indicators(1day).'
+     value
+ffr    1.0
+pa     0.0
+pos    0.0

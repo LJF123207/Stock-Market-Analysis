@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票分析系统登录</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}">
+</head>
+<body class="has-nav">
+    <header class="top-nav">
+        <div class="brand">📈 股票分析系统</div>
+        <nav class="nav-links">
+            <a href="{{ url_for('login') }}">登录</a>
+            <a href="{{ url_for('tutorial') }}">系统说明</a>
+        </nav>
+        <div class="nav-actions">
+            <span class="status-pill">访客模式</span>
+        </div>
+    </header>
+
+    <div class="login-container page-block">
+        <h2>股票分析系统登录</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                <p><strong>{{ message }}</strong></p>
+              {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login') }}" method="post">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+
+        <hr>
+
+        <h2>新用户注册</h2>
+        <form action="{{ url_for('register') }}" method="post">
+            <input type="text" name="new_username" placeholder="New Username" required>
+            <input type="email" name="new_email" placeholder="Email" required>
+            <input type="password" name="new_password" placeholder="New Password" required>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</body>
+</html>

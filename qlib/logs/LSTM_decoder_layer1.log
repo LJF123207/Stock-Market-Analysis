@@ -1,0 +1,151 @@
+[993435:MainThread](2025-12-19 16:24:40,566) INFO - qlib.qrun - [run.py:78] - Render the template with the context: {}
+[993435:MainThread](2025-12-19 16:24:40,589) INFO - qlib.Initialization - [config.py:452] - default_conf: client.
+[993435:MainThread](2025-12-19 16:24:40,591) INFO - qlib.Initialization - [__init__.py:82] - qlib successfully initialized based on client settings.
+[993435:MainThread](2025-12-19 16:24:40,592) INFO - qlib.Initialization - [__init__.py:84] - data_path={'__DEFAULT_FREQ': PosixPath('/z5s/morph/home/ljf/qlib/data_provider_bin')}
+/z5s/morph/home/ljf/anaconda3/envs/qlib/lib/python3.10/site-packages/mlflow/tracking/_tracking_service/utils.py:140: FutureWarning: Filesystem tracking backend (e.g., './mlruns') is deprecated. Please switch to a database backend (e.g., 'sqlite:///mlflow.db'). For feedback, see: https://github.com/mlflow/mlflow/issues/18534
+  return FileStore(store_uri, store_uri)
+[993435:MainThread](2025-12-19 16:24:40,606) INFO - qlib.workflow - [exp.py:258] - Experiment 948686977992697904 starts running ...
+[993435:MainThread](2025-12-19 16:24:41,040) INFO - qlib.workflow - [recorder.py:345] - Recorder f602bd81b8654d429f73b9b3bbe85cbb starts running under Experiment 948686977992697904 ...
+[993435:MainThread](2025-12-19 16:24:43,145) INFO - qlib.LSTM - [pytorch_lstm_ts.py:62] - LSTM pytorch version...
+[993435:MainThread](2025-12-19 16:24:43,333) INFO - qlib.LSTM - [pytorch_lstm_ts.py:84] - LSTM parameters setting:
+d_feat : 80
+hidden_size : 128
+num_layers : 2
+dropout : 0.1
+n_epochs : 100
+lr : 0.0005
+metric : 
+batch_size : 512
+early_stop : 10
+optimizer : adam
+loss_type : mse
+device : cuda:0
+n_jobs : 10
+use_GPU : True
+seed : 0
+usenews : True
+fusion_type : decoder
+layer_num : 1
+d_news : 512
+[993435:MainThread](2025-12-19 16:24:55,528) INFO - qlib.timer - [log.py:127] - Time cost: 10.552s | Loading data Done
+[993435:MainThread](2025-12-19 16:24:56,772) INFO - qlib.timer - [log.py:127] - Time cost: 0.829s | RobustZScoreNorm Done
+[993435:MainThread](2025-12-19 16:24:56,930) INFO - qlib.timer - [log.py:127] - Time cost: 0.158s | Fillna Done
+[993435:MainThread](2025-12-19 16:24:57,585) INFO - qlib.timer - [log.py:127] - Time cost: 0.219s | DropnaLabel Done
+[993435:MainThread](2025-12-19 16:24:58,919) INFO - qlib.timer - [log.py:127] - Time cost: 1.334s | CSZScoreNorm Done
+[993435:MainThread](2025-12-19 16:24:58,922) INFO - qlib.timer - [log.py:127] - Time cost: 3.393s | fit & process data Done
+[993435:MainThread](2025-12-19 16:24:58,923) INFO - qlib.timer - [log.py:127] - Time cost: 13.947s | Init data Done
+[993435:MainThread](2025-12-19 16:25:00,849) INFO - qlib.LSTM - [pytorch_lstm_ts.py:265] - training...
+[993435:MainThread](2025-12-19 16:25:00,850) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch0:
+[993435:MainThread](2025-12-19 16:25:00,851) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+ModuleNotFoundError. CatBoostModel are skipped. (optional: maybe installing CatBoostModel can fix it.)
+ModuleNotFoundError. XGBModel is skipped(optional: maybe installing xgboost can fix it).
+[993435:MainThread](2025-12-19 16:25:13,708) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:25:25,058) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.990461, valid -0.977525
+[993435:MainThread](2025-12-19 16:25:25,062) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch1:
+[993435:MainThread](2025-12-19 16:25:25,062) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:25:36,771) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:25:49,313) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.988166, valid -0.975942
+[993435:MainThread](2025-12-19 16:25:49,317) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch2:
+[993435:MainThread](2025-12-19 16:25:49,317) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:26:01,859) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:26:16,188) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.983744, valid -0.978824
+[993435:MainThread](2025-12-19 16:26:16,190) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch3:
+[993435:MainThread](2025-12-19 16:26:16,191) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:26:28,706) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:26:42,422) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.982550, valid -0.976130
+[993435:MainThread](2025-12-19 16:26:42,423) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch4:
+[993435:MainThread](2025-12-19 16:26:42,424) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:26:52,182) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:27:04,644) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.971273, valid -0.980457
+[993435:MainThread](2025-12-19 16:27:04,644) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch5:
+[993435:MainThread](2025-12-19 16:27:04,645) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:27:14,624) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:27:26,620) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.964201, valid -0.981100
+[993435:MainThread](2025-12-19 16:27:26,621) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch6:
+[993435:MainThread](2025-12-19 16:27:26,621) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:27:36,967) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:27:48,714) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.951991, valid -0.977436
+[993435:MainThread](2025-12-19 16:27:48,714) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch7:
+[993435:MainThread](2025-12-19 16:27:48,715) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:27:59,829) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:28:10,709) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.939463, valid -0.984491
+[993435:MainThread](2025-12-19 16:28:10,710) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch8:
+[993435:MainThread](2025-12-19 16:28:10,710) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:28:21,464) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:28:32,543) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.923883, valid -0.984722
+[993435:MainThread](2025-12-19 16:28:32,544) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch9:
+[993435:MainThread](2025-12-19 16:28:32,545) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:28:43,699) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:28:54,380) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.903899, valid -0.985565
+[993435:MainThread](2025-12-19 16:28:54,381) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch10:
+[993435:MainThread](2025-12-19 16:28:54,381) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:29:04,600) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:29:16,696) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.898119, valid -0.985195
+[993435:MainThread](2025-12-19 16:29:16,697) INFO - qlib.LSTM - [pytorch_lstm_ts.py:269] - Epoch11:
+[993435:MainThread](2025-12-19 16:29:16,697) INFO - qlib.LSTM - [pytorch_lstm_ts.py:270] - training...
+[993435:MainThread](2025-12-19 16:29:26,447) INFO - qlib.LSTM - [pytorch_lstm_ts.py:272] - evaluating...
+[993435:MainThread](2025-12-19 16:29:38,828) INFO - qlib.LSTM - [pytorch_lstm_ts.py:275] - train -0.872837, valid -0.995376
+[993435:MainThread](2025-12-19 16:29:38,828) INFO - qlib.LSTM - [pytorch_lstm_ts.py:287] - early stop
+[993435:MainThread](2025-12-19 16:29:38,829) INFO - qlib.LSTM - [pytorch_lstm_ts.py:290] - best score: -0.975942 @ 1
+[993435:MainThread](2025-12-19 16:29:41,811) INFO - qlib.fill_placeholder - [__init__.py:798] - <PRED> lookes like a placeholder, but it can't match to any given values
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+[993435:MainThread](2025-12-19 16:29:45,369) INFO - qlib.workflow - [record_temp.py:198] - Signal record 'pred.pkl' has been saved as the artifact of the Experiment 948686977992697904
+'The following are prediction results of the LSTM model.'
+                          score
+datetime   instrument          
+2024-02-19 801011.SI   0.097287
+2024-02-20 801011.SI   0.081062
+2024-02-21 801011.SI   0.046960
+2024-02-22 801011.SI   0.066422
+2024-02-23 801011.SI   0.101232
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 144.50it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 142.14it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 113.65it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 111.95it/s]
+{'IC': np.float64(0.026718570310378695),
+ 'ICIR': np.float64(0.15047411648016887),
+ 'Rank IC': np.float64(0.0339619304086275),
+ 'Rank ICIR': np.float64(0.170396356106431)}
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 163.50it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 159.33it/s]
+[993435:MainThread](2025-12-19 16:29:45,979) INFO - qlib.backtest caller - [__init__.py:93] - Create new exchange
+[993435:MainThread](2025-12-19 16:29:54,338) WARNING - qlib.online operator - [exchange.py:226] - factor.day.bin file not exists or factor contains `nan`. Order using adjusted_price.
+[993435:MainThread](2025-12-19 16:29:54,338) WARNING - qlib.online operator - [exchange.py:228] - trade unit 100 is not supported in adjusted_price mode.
+[993435:MainThread](2025-12-19 16:29:54,784) WARNING - qlib.data - [data.py:665] - load calendar error: freq=day, future=True; return current calendar!
+[993435:MainThread](2025-12-19 16:29:54,784) WARNING - qlib.data - [data.py:668] - You can get future calendar by referring to the following document: https://github.com/microsoft/qlib/blob/main/scripts/data_collector/contrib/README.md
+[993435:MainThread](2025-12-19 16:29:54,787) WARNING - qlib.BaseExecutor - [executor.py:121] - `common_infra` is not set for <qlib.backtest.executor.SimulatorExecutor object at 0x7f9ea04a8070>
+backtest loop:   0%|          | 0/313 [00:00<?, ?it/s]/z5s/morph/home/ljf/qlib/qlib/utils/index_data.py:492: RuntimeWarning: Mean of empty slice
+  return np.nanmean(self.data)
+backtest loop:   4%|▎         | 11/313 [00:00<00:02, 107.76it/s]backtest loop:   7%|▋         | 22/313 [00:00<00:02, 108.54it/s]backtest loop:  11%|█         | 33/313 [00:00<00:02, 108.61it/s]backtest loop:  14%|█▍        | 45/313 [00:00<00:02, 111.51it/s]backtest loop:  18%|█▊        | 57/313 [00:00<00:02, 110.45it/s]backtest loop:  22%|██▏       | 69/313 [00:00<00:02, 113.51it/s]backtest loop:  26%|██▌       | 81/313 [00:00<00:02, 113.76it/s]backtest loop:  30%|██▉       | 93/313 [00:00<00:01, 113.99it/s]backtest loop:  34%|███▎      | 105/313 [00:00<00:01, 110.00it/s]backtest loop:  38%|███▊      | 118/313 [00:01<00:01, 114.79it/s]backtest loop:  42%|████▏     | 130/313 [00:01<00:01, 111.44it/s]backtest loop:  46%|████▌     | 143/313 [00:01<00:01, 114.80it/s]backtest loop:  50%|████▉     | 155/313 [00:01<00:01, 108.75it/s]backtest loop:  53%|█████▎    | 167/313 [00:01<00:01, 108.34it/s]backtest loop:  57%|█████▋    | 179/313 [00:01<00:01, 111.03it/s]backtest loop:  61%|██████    | 191/313 [00:01<00:01, 112.87it/s]backtest loop:  65%|██████▍   | 203/313 [00:01<00:00, 111.51it/s]backtest loop:  69%|██████▊   | 215/313 [00:01<00:00, 109.90it/s]backtest loop:  73%|███████▎  | 227/313 [00:02<00:00, 111.51it/s]backtest loop:  76%|███████▋  | 239/313 [00:02<00:00, 113.56it/s]backtest loop:  80%|████████  | 251/313 [00:02<00:00, 113.07it/s]backtest loop:  84%|████████▍ | 264/313 [00:02<00:00, 114.98it/s]backtest loop:  88%|████████▊ | 276/313 [00:02<00:00, 111.58it/s]backtest loop:  92%|█████████▏| 288/313 [00:02<00:00, 112.60it/s]backtest loop:  96%|█████████▌| 300/313 [00:02<00:00, 112.61it/s]backtest loop: 100%|█████████▉| 312/313 [00:02<00:00, 111.66it/s]backtest loop: 100%|██████████| 313/313 [00:02<00:00, 111.86it/s]
+[993435:MainThread](2025-12-19 16:29:57,605) INFO - qlib.workflow - [record_temp.py:515] - Portfolio analysis record 'port_analysis_1day.pkl' has been saved as the artifact of the Experiment 948686977992697904
+[993435:MainThread](2025-12-19 16:29:57,614) INFO - qlib.workflow - [record_temp.py:540] - Indicator analysis record 'indicator_analysis_1day.pkl' has been saved as the artifact of the Experiment 948686977992697904
+[993435:MainThread](2025-12-19 16:29:58,197) INFO - qlib.timer - [log.py:127] - Time cost: 0.000s | waiting `async_log` Done
+'The following are analysis results of benchmark return(1day).'
+                       risk
+mean               0.000765
+std                0.018797
+annualized_return  0.182187
+information_ratio  0.628250
+max_drawdown      -0.301693
+'The following are analysis results of the excess return without cost(1day).'
+                       risk
+mean               0.000449
+std                0.005980
+annualized_return  0.106793
+information_ratio  1.157560
+max_drawdown      -0.083560
+'The following are analysis results of the excess return with cost(1day).'
+                       risk
+mean               0.000256
+std                0.005978
+annualized_return  0.060997
+information_ratio  0.661350
+max_drawdown      -0.085895
+'The following are analysis results of indicators(1day).'
+     value
+ffr    1.0
+pa     0.0
+pos    0.0

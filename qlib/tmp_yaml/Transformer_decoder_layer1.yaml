@@ -1,0 +1,104 @@
+qlib_init:
+    provider_uri: "/z5s/morph/home/ljf/qlib/data_provider_bin"
+    region: cn
+market: &market custom_index
+benchmark: &benchmark '000000'
+data_handler_config: &data_handler_config
+    start_time: 2018-09-28
+    end_time: 2025-06-04
+    fit_start_time: 2018-09-28
+    fit_end_time: 2023-06-12
+    instruments: all
+    data_dir: /z5s/morph/home/ljf/qlib/data_stocks/IndexAndNews0928-0604
+    instrument_field: L2
+    date_field: date
+    feature_columns:
+        range:
+            start: 2
+            end: 82
+    news_columns:
+        range:
+            start: 82
+            end: 594
+    close_field: close
+    exclude_instruments:
+        - '000000'
+    infer_processors:
+        - class: RobustZScoreNorm
+          kwargs:
+              fields_group: feature
+              fit_start_time: 2018-09-28
+              fit_end_time: 2023-06-12
+              clip_outlier: true
+        - class: Fillna
+          kwargs:
+              fields_group: feature
+    learn_processors:
+        - class: DropnaLabel
+        - class: CSZScoreNorm
+          kwargs:
+              fields_group: label
+
+port_analysis_config: &port_analysis_config
+    strategy:
+        class: TopkDropoutStrategy
+        module_path: qlib.contrib.strategy
+        kwargs:
+            signal: <PRED>
+            topk: 30
+            n_drop: 5
+    backtest:
+        start_time: 2024-02-09
+        end_time: 2025-06-04
+        account: 100000000
+        benchmark: *benchmark
+        exchange_kwargs:
+            limit_threshold: 0.095
+            deal_price: close
+            open_cost: 0.0005
+            close_cost: 0.0015
+            min_cost: 5
+task:
+    model:
+        class: TransformerModel
+        module_path: qlib.contrib.model.pytorch_transformer_ts
+        kwargs:
+            seed: 0
+            n_jobs: 10
+            d_feat: 80
+            d_model: 512  # 默认64
+            d_news: 512
+            usenews: true
+            fusion_type: decoder
+            layer_num: 1
+            batch_size: 512
+            # dropout: 0.2
+            save_path: /z5s/morph/home/ljf/qlib/output/transformer_times_news.pth
+    dataset:
+        class: TSDatasetH
+        module_path: qlib.data.dataset
+        kwargs:
+            handler:
+                class: IndexNewsDataHandler
+                module_path: qlib.contrib.data.handler_index_news
+                kwargs: *data_handler_config
+            segments:
+                train: [2018-11-01, 2023-06-12]
+                valid: [2023-06-13, 2024-02-08]
+                test: [2024-02-09, 2025-06-04]
+            step_len: 20
+    record:
+        - class: SignalRecord
+          module_path: qlib.workflow.record_temp
+          kwargs:
+            model: <MODEL>
+            dataset: <DATASET>
+        - class: SigAnaRecord
+          module_path: qlib.workflow.record_temp
+          kwargs:
+            ana_long_short: False
+            ann_scaler: 252
+        - class: PortAnaRecord
+          module_path: qlib.workflow.record_temp
+          kwargs:
+            config: *port_analysis_config

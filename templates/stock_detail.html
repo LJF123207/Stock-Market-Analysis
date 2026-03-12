@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}">
+    <title>{{ stock_code }} 详情</title>
+</head>
+<body class="has-nav">
+    <header class="top-nav">
+        <div class="brand">📈 股票分析系统</div>
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}">首页</a>
+            <a href="{{ url_for('stock_list') }}">股票列表</a>
+            <a href="{{ url_for('trend_predict') }}">趋势预测</a>
+            <a href="{{ url_for('backtest_page') }}">策略回测</a>
+            <a href="{{ url_for('stock_screener') }}">智能分析</a>
+            <a href="{{ url_for('tutorial') }}">系统说明</a>
+        </nav>
+        <div class="nav-actions">
+            <span class="status-pill">{{ stock_code }}</span>
+            <a href="{{ url_for('logout') }}" class="ghost-link">退出</a>
+        </div>
+    </header>
+
+    <div class="container page-block">
+        <section class="stock-hero-card">
+            <h1>{{ stock_name }}（{{ stock_code }}）</h1>
+            <p>当前标的详情</p>
+            <div class="detail-tabs">
+                <a class="{{ 'active' if view_type == 'history' else '' }}" href="{{ url_for('stock_detail', stock_code=stock_code, view='history') }}">历史数据</a>
+                <a class="{{ 'active' if view_type == 'factors' else '' }}" href="{{ url_for('stock_detail', stock_code=stock_code, view='factors') }}">技术分析</a>
+                <a class="{{ 'active' if view_type == 'news' else '' }}" href="{{ url_for('stock_detail', stock_code=stock_code, view='news') }}">相关新闻</a>
+            </div>
+        </section>
+
+        <p>
+            {{ '展示全部历史数据（按时间倒序，可滚动查看）。' if view_type == 'history' else ('技术分析支持 K 线主图、成交量切换和 MACD/KDJ/RSI/BOLL 指标切换。' if view_type == 'factors' else '展示最新 20 条相关新闻，点击卡片查看完整新闻。') }}
+        </p>
+
+        {% if view_type == 'factors' and factor_chart %}
+        <section class="factor-panel">
+            <div class="panel-title">技术分析图表</div>
+            <div class="analysis-toolbar">
+                <div class="switch-group">
+                    <span class="switch-label">主图</span>
+                    <button class="switch-btn active" type="button" data-main-mode="price">价格</button>
+                    <button class="switch-btn" type="button" data-main-mode="volume">成交量</button>
+                </div>
+            </div>
+            <div class="chart-shell">
+                <div id="mainChart" class="chart-box main-chart"></div>
+                <div class="analysis-toolbar analysis-toolbar-between">
+                    <div class="switch-group">
+                        <span class="switch-label">指标</span>
+                        <button class="switch-btn active" type="button" data-indicator="MACD">MACD</button>
+                        <button class="switch-btn" type="button" data-indicator="KDJ">KDJ</button>
+                        <button class="switch-btn" type="button" data-indicator="RSI">RSI</button>
+                        <button class="switch-btn" type="button" data-indicator="BOLL">布林带</button>
+                    </div>
+                </div>
+                <div id="indicatorChart" class="chart-box indicator-chart"></div>
+            </div>
+        </section>
+        {% endif %}
+
+        {% if view_type in ['history', 'factors'] %}
+        <section class="factor-panel">
+            <div class="panel-title">详细数据</div>
+            <div class="table-container finance-table-wrap {{ 'table-scroll-all' if view_type == 'history' else '' }}">
+                <table class="finance-table factor-table {{ 'table-sticky-head' if view_type == 'history' else '' }}">
+                    <thead>
+                        <tr>
+                            {% for col in detail_columns %}
+                            <th>{{ col.label }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            {% for col in detail_columns %}
+                            {% set value = row.get(col.key) %}
+                            <td>{{ value if value is not none else '-' }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                        {% if not rows %}
+                        <tr>
+                            <td colspan="{{ detail_columns|length if detail_columns else 1 }}">暂无可展示数据。</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        {% endif %}
+
+        {% if view_type == 'news' %}
+        <section class="factor-panel">
+            <div class="panel-title">相关新闻（20条）</div>
+            <div class="news-grid">
+                {% for item in news_items %}
+                <article class="news-card" data-idx="{{ loop.index0 }}">
+                    <h3>{{ item.title }}</h3>
+                    <p class="news-meta">{{ item.dt }} | {{ item.src }} | {{ item.channel }}</p>
+                    <p class="news-preview">{{ item.preview }}</p>
+                </article>
+                {% endfor %}
+                {% if not news_items %}
+                <p class="hint-note">该标的暂无相关新闻数据。</p>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if view_type == 'factors' %}
+        <p class="hint-note">空值说明：MACD_dif 前 25 行、MACD_dea 与 MACD_hist 前 33 行、KDJ 前 8 行、RSI_14 前 14 行、BOLL 前 19 行可能为空。</p>
+        {% endif %}
+    </div>
+
+    <div id="newsModal" class="news-modal">
+        <div class="news-modal-box">
+            <h3 id="newsModalTitle"></h3>
+            <p id="newsModalMeta" class="news-meta"></p>
+            <div id="newsModalContent" class="news-content"></div>
+            <button id="closeNewsModal" type="button">关闭</button>
+        </div>
+    </div>
+
+    {% if view_type == 'factors' and factor_chart %}
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script>
+    (function () {
+        const chartData = {{ factor_chart | tojson }};
+        const labels = chartData.labels || [];
+        if (!labels.length || typeof echarts === "undefined") return;
+
+        const price = chartData.price || {};
+        const indicators = chartData.indicators || {};
+        const kData = labels.map((_, i) => [
+            price.open ? price.open[i] : null,
+            price.close ? price.close[i] : null,
+            price.low ? price.low[i] : null,
+            price.high ? price.high[i] : null
+        ]);
+        const volumeData = labels.map((_, i) => price.volume ? price.volume[i] : null);
+        const candleColors = kData.map((v) => {
+            if (!v || v[0] === null || v[1] === null) return "#9ba7bd";
+            return v[1] >= v[0] ? "#f54e4e" : "#19a15f";
+        });
+
+        const startSpan = Math.max(0, Math.min(100, 100 - Math.round(((chartData.window_size || 60) / Math.max(labels.length, 1)) * 100)));
+        const mainChart = echarts.init(document.getElementById("mainChart"));
+        const indicatorChart = echarts.init(document.getElementById("indicatorChart"));
+
+        let mainMode = "price";
+        let indicatorMode = "MACD";
+        let zoomState = { start: startSpan, end: 100 };
+
+        function volumeSeries(name, data, yAxisIndex) {
+            return {
+                name,
+                type: "bar",
+                yAxisIndex,
+                data: data.map((v, i) => ({
+                    value: v,
+                    itemStyle: { color: candleColors[i] }
+                })),
+                barWidth: "58%"
+            };
+        }
+
+        function buildMainOption() {
+            const series = mainMode === "price"
+                ? [
+                    {
+                        name: "K线",
+                        type: "candlestick",
+                        data: kData,
+                        itemStyle: {
+                            color: "#f54e4e",
+                            color0: "#19a15f",
+                            borderColor: "#f54e4e",
+                            borderColor0: "#19a15f"
+                        }
+                    }
+                ]
+                : [volumeSeries("成交量", volumeData, 0)];
+
+            return {
+                animation: false,
+                grid: { left: 60, right: 30, top: 40, bottom: 80 },
+                legend: { top: 8, data: [mainMode === "price" ? "K线" : "成交量"] },
+                tooltip: { trigger: "axis" },
+                xAxis: {
+                    type: "category",
+                    data: labels,
+                    boundaryGap: true,
+                    axisLine: { lineStyle: { color: "#b9c8df" } }
+                },
+                yAxis: {
+                    scale: true,
+                    splitLine: { lineStyle: { color: "#edf2fb" } },
+                    axisLabel: { formatter: "{value}" }
+                },
+                dataZoom: [
+                    { type: "inside", xAxisIndex: 0, start: zoomState.start, end: zoomState.end },
+                    { type: "slider", xAxisIndex: 0, start: zoomState.start, end: zoomState.end, bottom: 18, height: 28 }
+                ],
+                series
+            };
+        }
+
+        function buildIndicatorOption() {
+            const base = {
+                animation: false,
+                grid: { left: 60, right: 30, top: 40, bottom: 40 },
+                legend: { top: 8 },
+                tooltip: { trigger: "axis" },
+                xAxis: {
+                    type: "category",
+                    data: labels,
+                    boundaryGap: true,
+                    axisLine: { lineStyle: { color: "#b9c8df" } }
+                },
+                yAxis: { scale: true, splitLine: { lineStyle: { color: "#edf2fb" } } },
+                dataZoom: [{ type: "inside", xAxisIndex: 0, start: zoomState.start, end: zoomState.end }],
+                series: []
+            };
+
+            if (indicatorMode === "MACD") {
+                base.legend.data = ["MACD_hist", "DIF", "DEA"];
+                base.series = [
+                    {
+                        name: "MACD_hist",
+                        type: "bar",
+                        data: (indicators.MACD_hist || []).map((v) => ({
+                            value: v,
+                            itemStyle: { color: (v || 0) >= 0 ? "#f54e4e" : "#19a15f" }
+                        })),
+                        barWidth: "55%"
+                    },
+                    { name: "DIF", type: "line", showSymbol: false, smooth: true, lineStyle: { width: 1.8, color: "#ff9f1c" }, data: indicators.MACD_dif || [] },
+                    { name: "DEA", type: "line", showSymbol: false, smooth: true, lineStyle: { width: 1.8, color: "#2d9cdb" }, data: indicators.MACD_dea || [] }
+                ];
+                return base;
+            }
+
+            if (indicatorMode === "KDJ") {
+                base.legend.data = ["K", "D", "J"];
+                base.series = [
+                    { name: "K", type: "line", showSymbol: false, smooth: true, lineStyle: { width: 1.8, color: "#f7b500" }, data: indicators.KDJ_K || [] },
+                    { name: "D", type: "line", showSymbol: false, smooth: true, lineStyle: { width: 1.8, color: "#00a6a6" }, data: indicators.KDJ_D || [] },
+                    { name: "J", type: "line", showSymbol: false, smooth: true, lineStyle: { width: 1.8, color: "#7b61ff" }, data: indicators.KDJ_J || [] }
+                ];
+                return base;
+            }
+
+            if (indicatorMode === "RSI") {
+                base.legend.data = ["RSI_14"];
+                base.yAxis.min = 0;
+                base.yAxis.max = 100;
+                base.series = [
+                    {
+                        name: "RSI_14",
+                        type: "line",
+                        showSymbol: false,
+                        smooth: true,
+                        lineStyle: { width: 2, color: "#5b8ff9" },
+                        markLine: {
+                            symbol: "none",
+                            lineStyle: { type: "dashed", color: "#9ca9c1" },
+                            label: { formatter: "{b}:{c}" },
+                            data: [
+                                { yAxis: 70, name: "超买" },
+                                { yAxis: 30, name: "超卖" }
+                            ]
+                        },
+                        data: indicators.RSI_14 || []
+                    }
+                ];
+                return base;
+            }
+
+            base.legend.data = ["BOLL上轨", "BOLL中轨", "BOLL下轨"];
+            base.series = [
+                { name: "BOLL上轨", type: "line", showSymbol: false, smooth: true, lineStyle: { width: 1.8, color: "#ff6b6b" }, data: indicators.BOLL_upper || [] },
+                { name: "BOLL中轨", type: "line", showSymbol: false, smooth: true, lineStyle: { width: 1.8, color: "#5b8ff9" }, data: indicators.BOLL_mid || [] },
+                { name: "BOLL下轨", type: "line", showSymbol: false, smooth: true, lineStyle: { width: 1.8, color: "#52c41a" }, data: indicators.BOLL_lower || [] }
+            ];
+            return base;
+        }
+
+        function render() {
+            mainChart.setOption(buildMainOption(), true);
+            indicatorChart.setOption(buildIndicatorOption(), true);
+        }
+
+        mainChart.on("dataZoom", function () {
+            const opt = mainChart.getOption();
+            const dz = (opt.dataZoom || [])[0] || {};
+            zoomState = { start: dz.start || 0, end: dz.end || 100 };
+            indicatorChart.dispatchAction({
+                type: "dataZoom",
+                start: zoomState.start,
+                end: zoomState.end
+            });
+        });
+
+        document.querySelectorAll("[data-main-mode]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                mainMode = btn.dataset.mainMode;
+                document.querySelectorAll("[data-main-mode]").forEach((n) => n.classList.remove("active"));
+                btn.classList.add("active");
+                render();
+            });
+        });
+
+        document.querySelectorAll("[data-indicator]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                indicatorMode = btn.dataset.indicator;
+                document.querySelectorAll("[data-indicator]").forEach((n) => n.classList.remove("active"));
+                btn.classList.add("active");
+                render();
+            });
+        });
+
+        window.addEventListener("resize", () => {
+            mainChart.resize();
+            indicatorChart.resize();
+        });
+
+        render();
+    })();
+    </script>
+    {% endif %}
+
+    {% if view_type == 'news' %}
+    <script>
+    (function () {
+        const items = {{ news_items | tojson }};
+        const modal = document.getElementById('newsModal');
+        const titleNode = document.getElementById('newsModalTitle');
+        const metaNode = document.getElementById('newsModalMeta');
+        const contentNode = document.getElementById('newsModalContent');
+        const closeBtn = document.getElementById('closeNewsModal');
+        if (!modal) return;
+
+        document.querySelectorAll('.news-card').forEach((card) => {
+            card.addEventListener('click', () => {
+                const idx = Number(card.dataset.idx || 0);
+                const item = items[idx] || {};
+                titleNode.textContent = item.title || '新闻详情';
+                metaNode.textContent = [item.dt || '', item.src || '', item.channel || ''].filter(Boolean).join(' | ');
+                contentNode.textContent = item.content || '';
+                modal.classList.add('open');
+            });
+        });
+
+        closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('open');
+        });
+    })();
+    </script>
+    {% endif %}
+</body>
+</html>

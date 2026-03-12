@@ -1,0 +1,215 @@
+[1040982:MainThread](2025-12-19 16:53:25,795) INFO - qlib.qrun - [run.py:78] - Render the template with the context: {}
+[1040982:MainThread](2025-12-19 16:53:25,818) INFO - qlib.Initialization - [config.py:452] - default_conf: client.
+[1040982:MainThread](2025-12-19 16:53:25,822) INFO - qlib.Initialization - [__init__.py:82] - qlib successfully initialized based on client settings.
+[1040982:MainThread](2025-12-19 16:53:25,822) INFO - qlib.Initialization - [__init__.py:84] - data_path={'__DEFAULT_FREQ': PosixPath('/z5s/morph/home/ljf/qlib/data_provider_bin')}
+/z5s/morph/home/ljf/anaconda3/envs/qlib/lib/python3.10/site-packages/mlflow/tracking/_tracking_service/utils.py:140: FutureWarning: Filesystem tracking backend (e.g., './mlruns') is deprecated. Please switch to a database backend (e.g., 'sqlite:///mlflow.db'). For feedback, see: https://github.com/mlflow/mlflow/issues/18534
+  return FileStore(store_uri, store_uri)
+[1040982:MainThread](2025-12-19 16:53:25,840) INFO - qlib.workflow - [exp.py:258] - Experiment 948686977992697904 starts running ...
+[1040982:MainThread](2025-12-19 16:53:26,521) INFO - qlib.workflow - [recorder.py:345] - Recorder dce63c6cabc34cb6848a13dae746537c starts running under Experiment 948686977992697904 ...
+[1040982:MainThread](2025-12-19 16:53:29,538) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:65] - ALSTM pytorch version...
+[1040982:MainThread](2025-12-19 16:53:29,710) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:87] - ALSTM parameters setting:
+d_feat : 80
+hidden_size : 128
+num_layers : 2
+dropout : 0.1
+n_epochs : 100
+lr : 0.0005
+metric : 
+batch_size : 512
+early_stop : 10
+optimizer : adam
+loss_type : mse
+device : cuda:0
+n_jobs : 10
+use_GPU : True
+seed : 0
+usenews : True
+fusion_type : decoder
+layer_num : 6
+d_news : 512
+[1040982:MainThread](2025-12-19 16:53:29,766) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:144] - model:
+ALSTMModel(
+  (feature_fc): Linear(in_features=80, out_features=128, bias=True)
+  (news_fc): Linear(in_features=512, out_features=128, bias=True)
+  (act): Tanh()
+  (rnn): GRU(128, 128, num_layers=2, batch_first=True, dropout=0.1)
+  (fc_out): Linear(in_features=256, out_features=1, bias=True)
+  (att_net): Sequential(
+    (att_fc_in): Linear(in_features=128, out_features=64, bias=True)
+    (att_dropout): Dropout(p=0.1, inplace=False)
+    (att_act): Tanh()
+    (att_fc_out): Linear(in_features=64, out_features=1, bias=False)
+    (att_softmax): Softmax(dim=1)
+  )
+  (decoder_layers): CrossAttentionDecoder(
+    (ts_pos): SinusoidalPositionalEncoding()
+    (decoder): TransformerDecoder(
+      (layers): ModuleList(
+        (0-5): 6 x TransformerDecoderLayer(
+          (self_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=128, out_features=128, bias=True)
+          )
+          (multihead_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=128, out_features=128, bias=True)
+          )
+          (linear1): Linear(in_features=128, out_features=512, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=512, out_features=128, bias=True)
+          (norm1): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+  )
+)
+[1040982:MainThread](2025-12-19 16:53:29,767) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:145] - model size: 1.7836 MB
+[1040982:MainThread](2025-12-19 16:53:43,063) INFO - qlib.timer - [log.py:127] - Time cost: 10.834s | Loading data Done
+[1040982:MainThread](2025-12-19 16:53:44,334) INFO - qlib.timer - [log.py:127] - Time cost: 0.842s | RobustZScoreNorm Done
+[1040982:MainThread](2025-12-19 16:53:44,498) INFO - qlib.timer - [log.py:127] - Time cost: 0.163s | Fillna Done
+[1040982:MainThread](2025-12-19 16:53:45,212) INFO - qlib.timer - [log.py:127] - Time cost: 0.247s | DropnaLabel Done
+[1040982:MainThread](2025-12-19 16:53:46,645) INFO - qlib.timer - [log.py:127] - Time cost: 1.432s | CSZScoreNorm Done
+[1040982:MainThread](2025-12-19 16:53:46,648) INFO - qlib.timer - [log.py:127] - Time cost: 3.584s | fit & process data Done
+[1040982:MainThread](2025-12-19 16:53:46,649) INFO - qlib.timer - [log.py:127] - Time cost: 14.420s | Init data Done
+[1040982:MainThread](2025-12-19 16:53:48,742) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:276] - training...
+[1040982:MainThread](2025-12-19 16:53:48,742) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch0:
+[1040982:MainThread](2025-12-19 16:53:48,743) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+ModuleNotFoundError. CatBoostModel are skipped. (optional: maybe installing CatBoostModel can fix it.)
+ModuleNotFoundError. XGBModel is skipped(optional: maybe installing xgboost can fix it).
+[1040982:MainThread](2025-12-19 16:54:08,608) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:54:25,161) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.993165, valid -0.979169
+[1040982:MainThread](2025-12-19 16:54:25,169) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch1:
+[1040982:MainThread](2025-12-19 16:54:25,169) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 16:54:46,620) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:55:03,290) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992569, valid -0.977777
+[1040982:MainThread](2025-12-19 16:55:03,301) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch2:
+[1040982:MainThread](2025-12-19 16:55:03,301) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 16:55:24,613) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:55:43,664) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992958, valid -0.977779
+[1040982:MainThread](2025-12-19 16:55:43,665) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch3:
+[1040982:MainThread](2025-12-19 16:55:43,665) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 16:56:01,077) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:56:16,655) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992435, valid -0.977736
+[1040982:MainThread](2025-12-19 16:56:16,661) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch4:
+[1040982:MainThread](2025-12-19 16:56:16,662) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 16:56:36,553) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:57:01,621) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992850, valid -0.978856
+[1040982:MainThread](2025-12-19 16:57:01,622) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch5:
+[1040982:MainThread](2025-12-19 16:57:01,622) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 16:57:21,536) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:57:46,068) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992260, valid -0.977657
+[1040982:MainThread](2025-12-19 16:57:46,074) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch6:
+[1040982:MainThread](2025-12-19 16:57:46,074) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 16:58:06,051) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:58:30,249) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992796, valid -0.977733
+[1040982:MainThread](2025-12-19 16:58:30,250) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch7:
+[1040982:MainThread](2025-12-19 16:58:30,250) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 16:58:51,088) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:59:14,899) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992442, valid -0.977580
+[1040982:MainThread](2025-12-19 16:59:14,916) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch8:
+[1040982:MainThread](2025-12-19 16:59:14,916) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 16:59:36,323) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 16:59:59,710) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992438, valid -0.977974
+[1040982:MainThread](2025-12-19 16:59:59,711) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch9:
+[1040982:MainThread](2025-12-19 16:59:59,711) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:00:21,151) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:00:43,334) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.993160, valid -0.978421
+[1040982:MainThread](2025-12-19 17:00:43,335) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch10:
+[1040982:MainThread](2025-12-19 17:00:43,335) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:01:05,233) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:01:25,307) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992738, valid -0.977641
+[1040982:MainThread](2025-12-19 17:01:25,307) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch11:
+[1040982:MainThread](2025-12-19 17:01:25,308) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:01:47,559) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:02:09,561) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992401, valid -0.977642
+[1040982:MainThread](2025-12-19 17:02:09,562) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch12:
+[1040982:MainThread](2025-12-19 17:02:09,563) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:02:37,227) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:03:03,638) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.991850, valid -0.977790
+[1040982:MainThread](2025-12-19 17:03:03,639) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch13:
+[1040982:MainThread](2025-12-19 17:03:03,640) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:03:31,133) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:03:57,272) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.993529, valid -0.978616
+[1040982:MainThread](2025-12-19 17:03:57,274) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch14:
+[1040982:MainThread](2025-12-19 17:03:57,275) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:04:24,836) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:04:48,899) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992977, valid -0.977659
+[1040982:MainThread](2025-12-19 17:04:48,900) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch15:
+[1040982:MainThread](2025-12-19 17:04:48,901) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:05:14,515) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:05:37,117) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992967, valid -0.977700
+[1040982:MainThread](2025-12-19 17:05:37,118) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch16:
+[1040982:MainThread](2025-12-19 17:05:37,119) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:05:59,515) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:06:22,010) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.992434, valid -0.977869
+[1040982:MainThread](2025-12-19 17:06:22,011) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:280] - Epoch17:
+[1040982:MainThread](2025-12-19 17:06:22,012) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:281] - training...
+[1040982:MainThread](2025-12-19 17:06:43,668) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:283] - evaluating...
+[1040982:MainThread](2025-12-19 17:07:10,152) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:286] - train -0.993203, valid -0.977912
+[1040982:MainThread](2025-12-19 17:07:10,153) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:298] - early stop
+[1040982:MainThread](2025-12-19 17:07:10,154) INFO - qlib.ALSTM - [pytorch_alstm_ts.py:301] - best score: -0.977580 @ 7
+[1040982:MainThread](2025-12-19 17:07:13,977) INFO - qlib.fill_placeholder - [__init__.py:798] - <PRED> lookes like a placeholder, but it can't match to any given values
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+[1040982:MainThread](2025-12-19 17:07:20,031) INFO - qlib.workflow - [record_temp.py:198] - Signal record 'pred.pkl' has been saved as the artifact of the Experiment 948686977992697904
+'The following are prediction results of the ALSTM model.'
+                          score
+datetime   instrument          
+2024-02-19 801011.SI   0.003533
+2024-02-20 801011.SI   0.003536
+2024-02-21 801011.SI   0.003537
+2024-02-22 801011.SI   0.003536
+2024-02-23 801011.SI   0.003534
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 100.93it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 98.18it/s] 
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 107.06it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 105.53it/s]
+{'IC': np.float64(0.017753020653242534),
+ 'ICIR': np.float64(0.10203688690407213),
+ 'Rank IC': np.float64(0.024903005773683144),
+ 'Rank ICIR': np.float64(0.1380368562693179)}
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 132.61it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 129.25it/s]
+[1040982:MainThread](2025-12-19 17:07:20,702) INFO - qlib.backtest caller - [__init__.py:93] - Create new exchange
+[1040982:MainThread](2025-12-19 17:07:29,199) WARNING - qlib.online operator - [exchange.py:226] - factor.day.bin file not exists or factor contains `nan`. Order using adjusted_price.
+[1040982:MainThread](2025-12-19 17:07:29,199) WARNING - qlib.online operator - [exchange.py:228] - trade unit 100 is not supported in adjusted_price mode.
+[1040982:MainThread](2025-12-19 17:07:30,095) WARNING - qlib.data - [data.py:665] - load calendar error: freq=day, future=True; return current calendar!
+[1040982:MainThread](2025-12-19 17:07:30,096) WARNING - qlib.data - [data.py:668] - You can get future calendar by referring to the following document: https://github.com/microsoft/qlib/blob/main/scripts/data_collector/contrib/README.md
+[1040982:MainThread](2025-12-19 17:07:30,101) WARNING - qlib.BaseExecutor - [executor.py:121] - `common_infra` is not set for <qlib.backtest.executor.SimulatorExecutor object at 0x7f83247a3fd0>
+backtest loop:   0%|          | 0/313 [00:00<?, ?it/s]/z5s/morph/home/ljf/qlib/qlib/utils/index_data.py:492: RuntimeWarning: Mean of empty slice
+  return np.nanmean(self.data)
+backtest loop:   3%|▎         | 8/313 [00:00<00:04, 74.12it/s]backtest loop:   5%|▌         | 16/313 [00:00<00:04, 74.02it/s]backtest loop:   8%|▊         | 24/313 [00:00<00:03, 74.57it/s]backtest loop:  10%|█         | 32/313 [00:00<00:03, 70.45it/s]backtest loop:  13%|█▎        | 40/313 [00:00<00:03, 68.78it/s]backtest loop:  15%|█▌        | 48/313 [00:00<00:03, 68.07it/s]backtest loop:  18%|█▊        | 55/313 [00:00<00:03, 66.52it/s]backtest loop:  20%|█▉        | 62/313 [00:00<00:03, 66.35it/s]backtest loop:  22%|██▏       | 70/313 [00:01<00:03, 67.41it/s]backtest loop:  25%|██▍       | 78/313 [00:01<00:03, 70.39it/s]backtest loop:  27%|██▋       | 86/313 [00:01<00:03, 70.13it/s]backtest loop:  30%|███       | 94/313 [00:01<00:03, 69.04it/s]backtest loop:  33%|███▎      | 102/313 [00:01<00:02, 71.58it/s]backtest loop:  35%|███▌      | 110/313 [00:01<00:02, 71.20it/s]backtest loop:  38%|███▊      | 118/313 [00:01<00:02, 72.83it/s]backtest loop:  40%|████      | 126/313 [00:01<00:02, 72.08it/s]backtest loop:  43%|████▎     | 134/313 [00:01<00:02, 69.44it/s]backtest loop:  45%|████▌     | 142/313 [00:02<00:02, 71.45it/s]backtest loop:  48%|████▊     | 150/313 [00:02<00:02, 71.39it/s]backtest loop:  50%|█████     | 158/313 [00:02<00:02, 68.27it/s]backtest loop:  53%|█████▎    | 166/313 [00:02<00:02, 70.03it/s]backtest loop:  56%|█████▌    | 174/313 [00:02<00:02, 69.45it/s]backtest loop:  58%|█████▊    | 182/313 [00:02<00:01, 68.91it/s]backtest loop:  61%|██████    | 190/313 [00:02<00:01, 71.27it/s]backtest loop:  63%|██████▎   | 198/313 [00:02<00:01, 69.92it/s]backtest loop:  66%|██████▌   | 206/313 [00:02<00:01, 72.19it/s]backtest loop:  68%|██████▊   | 214/313 [00:03<00:01, 69.28it/s]backtest loop:  71%|███████   | 221/313 [00:03<00:01, 68.83it/s]backtest loop:  73%|███████▎  | 229/313 [00:03<00:01, 71.32it/s]backtest loop:  76%|███████▌  | 237/313 [00:03<00:01, 68.23it/s]backtest loop:  78%|███████▊  | 245/313 [00:03<00:00, 69.00it/s]backtest loop:  81%|████████  | 253/313 [00:03<00:00, 71.17it/s]backtest loop:  83%|████████▎ | 261/313 [00:03<00:00, 70.81it/s]backtest loop:  86%|████████▌ | 269/313 [00:03<00:00, 72.44it/s]backtest loop:  88%|████████▊ | 277/313 [00:03<00:00, 70.26it/s]backtest loop:  91%|█████████ | 285/313 [00:04<00:00, 69.78it/s]backtest loop:  94%|█████████▎| 293/313 [00:04<00:00, 69.61it/s]backtest loop:  96%|█████████▌| 301/313 [00:04<00:00, 68.83it/s]backtest loop:  99%|█████████▊| 309/313 [00:04<00:00, 70.40it/s]backtest loop: 100%|██████████| 313/313 [00:04<00:00, 70.14it/s]
+[1040982:MainThread](2025-12-19 17:07:34,608) INFO - qlib.workflow - [record_temp.py:515] - Portfolio analysis record 'port_analysis_1day.pkl' has been saved as the artifact of the Experiment 948686977992697904
+[1040982:MainThread](2025-12-19 17:07:34,622) INFO - qlib.workflow - [record_temp.py:540] - Indicator analysis record 'indicator_analysis_1day.pkl' has been saved as the artifact of the Experiment 948686977992697904
+[1040982:MainThread](2025-12-19 17:07:35,010) INFO - qlib.timer - [log.py:127] - Time cost: 0.001s | waiting `async_log` Done
+'The following are analysis results of benchmark return(1day).'
+                       risk
+mean               0.000765
+std                0.018797
+annualized_return  0.182187
+information_ratio  0.628250
+max_drawdown      -0.301693
+'The following are analysis results of the excess return without cost(1day).'
+                       risk
+mean               0.000534
+std                0.004609
+annualized_return  0.127018
+information_ratio  1.786313
+max_drawdown      -0.045793
+'The following are analysis results of the excess return with cost(1day).'
+                       risk
+mean               0.000354
+std                0.004606
+annualized_return  0.084230
+information_ratio  1.185334
+max_drawdown      -0.050348
+'The following are analysis results of indicators(1day).'
+     value
+ffr    1.0
+pa     0.0
+pos    0.0

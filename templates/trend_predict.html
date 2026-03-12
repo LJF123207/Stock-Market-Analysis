@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}">
+    <title>趋势预测</title>
+</head>
+<body class="has-nav">
+    <header class="top-nav">
+        <div class="brand">📈 股票分析系统</div>
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}">首页</a>
+            <a href="{{ url_for('stock_list') }}">股票列表</a>
+            <a href="{{ url_for('trend_predict') }}">趋势预测</a>
+            <a href="{{ url_for('backtest_page') }}">策略回测</a>
+            <a href="{{ url_for('stock_screener') }}">智能分析</a>
+            <a href="{{ url_for('tutorial') }}">系统说明</a>
+        </nav>
+        <div class="nav-actions">
+            <span class="status-pill">已登录</span>
+            <a href="{{ url_for('logout') }}" class="ghost-link">退出</a>
+        </div>
+    </header>
+
+    <div class="container page-block">
+        <h1>趋势预测</h1>
+        <p>按标的、模型和特征模式配置训练与预测流程。</p>
+
+        <form method="POST" action="{{ url_for('trend_predict') }}" class="screener-form">
+            <div class="trend-grid">
+                <div>
+                    <label for="keyword">股票代码 / 类别</label>
+                    <input id="keyword" name="keyword" placeholder="如 801125.SI 或 白酒Ⅱ" value="{{ form_data.keyword }}">
+                </div>
+                <div>
+                    <label for="model">模型选择</label>
+                    <select id="model" name="model">
+                        {% for key, label in model_options %}
+                        <option value="{{ key }}" {{ 'selected' if form_data.model == key else '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="mode">模式选择</label>
+                    <select id="mode" name="mode">
+                        {% for key, label in mode_options %}
+                        <option value="{{ key }}" {{ 'selected' if form_data.mode == key else '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="fusion_type">融合方式</label>
+                    <select id="fusion_type" name="fusion_type">
+                        {% for key, label in fusion_options %}
+                        <option value="{{ key }}" {{ 'selected' if form_data.fusion_type == key else '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div id="layerWrap">
+                    <label for="layer_num">融合层数（crossattn/decoder）</label>
+                    <input id="layer_num" name="layer_num" type="number" min="1" max="12" step="1" value="{{ form_data.layer_num }}">
+                </div>
+            </div>
+
+            <div class="auth-links">
+                <button type="submit" name="action" value="train">模型训练</button>
+                <button type="submit" name="action" value="predict">开始预测</button>
+            </div>
+        </form>
+
+        {% if action_result %}
+        <section class="factor-panel trend-result">
+            <div class="panel-title">{{ action_result.action_text }}参数</div>
+            <div class="trend-result-body">
+                <p>{{ action_result.summary }}</p>
+                {% if action_result.command_hint %}
+                <p class="hint-note"><code>{{ action_result.command_hint }}</code></p>
+                {% endif %}
+                {% if action_result.extra %}
+                <p class="hint-note">{{ action_result.extra }}</p>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="factor-panel">
+            <div class="panel-title">训练任务状态</div>
+            <div class="table-container finance-table-wrap table-scroll-all">
+                <table class="finance-table table-sticky-head">
+                    <thead>
+                        <tr>
+                            <th>任务ID</th>
+                            <th>模型</th>
+                            <th>模式</th>
+                            <th>融合</th>
+                            <th>层数</th>
+                            <th>标的</th>
+                            <th>状态</th>
+                            <th>创建时间</th>
+                            <th>日志</th>
+                            <th>预测文件</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for j in jobs %}
+                        <tr>
+                            <td>{{ j.id }}</td>
+                            <td>{{ j.model }}</td>
+                            <td>{{ j.mode }}</td>
+                            <td>{{ j.fusion_type }}</td>
+                            <td>{{ j.layer_num }}</td>
+                            <td>{{ j.keyword }}</td>
+                            <td>{{ j.status }}</td>
+                            <td>{{ j.created_at }}</td>
+                            <td><code>{{ j.log_path }}</code></td>
+                            <td><code>{{ j.pred_path if j.pred_path else '-' }}</code></td>
+                        </tr>
+                        {% endfor %}
+                        {% if not jobs %}
+                        <tr>
+                            <td colspan="11">暂无训练任务。</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="factor-panel">
+            <div class="panel-title">预测结果（测试集全量：真实收益率 vs 预测收益率）</div>
+            <div class="trend-result-body">
+                {% if prediction_source %}
+                <p class="hint-note">来源：<code>{{ prediction_source }}</code></p>
+                {% endif %}
+                {% if prediction_error %}
+                <p class="hint-note">{{ prediction_error }}</p>
+                {% endif %}
+            </div>
+            <div class="table-container finance-table-wrap table-scroll-all">
+                <table class="finance-table table-sticky-head">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>股票代码</th>
+                            <th>股票名称</th>
+                            <th>点位类型</th>
+                            <th>真实收益率</th>
+                            <th>预测收益率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in prediction_rows %}
+                        <tr>
+                            <td>{{ r.date }}</td>
+                            <td>{{ r.code }}</td>
+                            <td>{{ r.name }}</td>
+                            <td>{{ '历史基准' if r.point_type == 'history' else '未来预测' }}</td>
+                            <td>{{ r.real_return if r.real_return is not none else '-' }}</td>
+                            <td>{{ r.pred_return if r.pred_return is not none else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not prediction_rows %}
+                        <tr>
+                            <td colspan="6">暂无可展示的预测结果，请先训练或调整筛选条件。</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        {% if prediction_chart %}
+        <section class="factor-panel">
+            <div class="panel-title">收益率趋势图（{{ prediction_chart.name }} / {{ prediction_chart.code }}）</div>
+            <div class="chart-shell">
+                <div id="trendChart" class="chart-box" style="height: 360px;"></div>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+    {% if prediction_chart %}
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    {% endif %}
+    <script>
+    (function () {
+        const mode = document.getElementById("mode");
+        const fusion = document.getElementById("fusion_type");
+        const layerWrap = document.getElementById("layerWrap");
+        const layer = document.getElementById("layer_num");
+
+        function refreshFusionUI() {
+            const isTechNews = mode.value === "tech_news";
+            const needLayer = isTechNews && (fusion.value === "crossattn" || fusion.value === "decoder");
+            fusion.disabled = !isTechNews;
+            layer.disabled = !needLayer;
+            layerWrap.style.display = needLayer ? "block" : "none";
+        }
+
+        mode.addEventListener("change", refreshFusionUI);
+        fusion.addEventListener("change", refreshFusionUI);
+        refreshFusionUI();
+    })();
+    </script>
+    {% if has_pending_trend_jobs %}
+    <script>
+    (function () {
+        // Auto-refresh with GET navigation to avoid accidental POST re-submit.
+        setTimeout(function () {
+            window.location.href = {{ url_for('trend_predict') | tojson }};
+        }, 4000);
+    })();
+    </script>
+    {% endif %}
+    {% if prediction_chart %}
+    <script>
+    (function () {
+        const data = {{ prediction_chart | tojson }};
+        if (typeof echarts === "undefined") return;
+        const node = document.getElementById("trendChart");
+        if (!node) return;
+        const chart = echarts.init(node);
+        chart.setOption({
+            animation: false,
+            tooltip: { trigger: "axis" },
+            legend: {
+                top: 8,
+                data: ["真实收益率", "预测收益率"]
+            },
+            grid: { left: 60, right: 24, top: 42, bottom: 56 },
+            xAxis: {
+                type: "category",
+                data: data.labels || [],
+                axisLine: { lineStyle: { color: "#b9c8df" } }
+            },
+            yAxis: {
+                type: "value",
+                scale: true,
+                splitLine: { lineStyle: { color: "#edf2fb" } }
+            },
+            dataZoom: [
+                { type: "inside", start: 0, end: 100 },
+                { type: "slider", bottom: 16, height: 24, start: 0, end: 100 }
+            ],
+            series: [
+                {
+                    name: "真实收益率",
+                    type: "line",
+                    smooth: true,
+                    showSymbol: false,
+                    lineStyle: { width: 2, color: "#5b8ff9" },
+                    data: data.baseline || []
+                },
+                {
+                    name: "预测收益率",
+                    type: "line",
+                    smooth: true,
+                    showSymbol: false,
+                    lineStyle: { width: 2, color: "#ff7a45" },
+                    data: data.predicted || []
+                }
+            ]
+        });
+        window.addEventListener("resize", function () { chart.resize(); });
+    })();
+    </script>
+    {% endif %}
+</body>
+</html>

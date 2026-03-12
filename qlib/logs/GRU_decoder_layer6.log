@@ -1,0 +1,180 @@
+[1042378:MainThread](2025-12-19 16:53:41,973) INFO - qlib.qrun - [run.py:78] - Render the template with the context: {}
+[1042378:MainThread](2025-12-19 16:53:41,995) INFO - qlib.Initialization - [config.py:452] - default_conf: client.
+[1042378:MainThread](2025-12-19 16:53:41,999) INFO - qlib.Initialization - [__init__.py:82] - qlib successfully initialized based on client settings.
+[1042378:MainThread](2025-12-19 16:53:42,000) INFO - qlib.Initialization - [__init__.py:84] - data_path={'__DEFAULT_FREQ': PosixPath('/z5s/morph/home/ljf/qlib/data_provider_bin')}
+/z5s/morph/home/ljf/anaconda3/envs/qlib/lib/python3.10/site-packages/mlflow/tracking/_tracking_service/utils.py:140: FutureWarning: Filesystem tracking backend (e.g., './mlruns') is deprecated. Please switch to a database backend (e.g., 'sqlite:///mlflow.db'). For feedback, see: https://github.com/mlflow/mlflow/issues/18534
+  return FileStore(store_uri, store_uri)
+[1042378:MainThread](2025-12-19 16:53:42,016) INFO - qlib.workflow - [exp.py:258] - Experiment 948686977992697904 starts running ...
+[1042378:MainThread](2025-12-19 16:53:42,459) INFO - qlib.workflow - [recorder.py:345] - Recorder 9278de15d6a34d45a1fc58a3f47dbe3d starts running under Experiment 948686977992697904 ...
+[1042378:MainThread](2025-12-19 16:53:45,647) INFO - qlib.GRU - [pytorch_gru_ts.py:63] - GRU pytorch version...
+[1042378:MainThread](2025-12-19 16:53:45,803) INFO - qlib.GRU - [pytorch_gru_ts.py:85] - GRU parameters setting:
+d_feat : 80
+hidden_size : 128
+num_layers : 2
+dropout : 0.1
+n_epochs : 100
+lr : 0.0005
+metric : 
+batch_size : 512
+early_stop : 10
+optimizer : adam
+loss_type : mse
+device : cuda:0
+n_jobs : 10
+use_GPU : True
+seed : 0
+usenews : True
+fusion_type : decoder
+layer_num : 6
+d_news : 512
+[1042378:MainThread](2025-12-19 16:53:45,865) INFO - qlib.GRU - [pytorch_gru_ts.py:142] - model:
+GRUModel(
+  (news_proj): Linear(in_features=512, out_features=80, bias=True)
+  (decoder_layers): CrossAttentionDecoder(
+    (ts_pos): SinusoidalPositionalEncoding()
+    (decoder): TransformerDecoder(
+      (layers): ModuleList(
+        (0-5): 6 x TransformerDecoderLayer(
+          (self_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=80, out_features=80, bias=True)
+          )
+          (multihead_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=80, out_features=80, bias=True)
+          )
+          (linear1): Linear(in_features=80, out_features=320, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear2): Linear(in_features=320, out_features=80, bias=True)
+          (norm1): LayerNorm((80,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((80,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((80,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.1, inplace=False)
+          (dropout2): Dropout(p=0.1, inplace=False)
+          (dropout3): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+  )
+  (rnn): GRU(80, 128, num_layers=2, batch_first=True, dropout=0.1)
+  (fc_out): Linear(in_features=128, out_features=1, bias=True)
+)
+[1042378:MainThread](2025-12-19 16:53:45,866) INFO - qlib.GRU - [pytorch_gru_ts.py:143] - model size: 0.8053 MB
+[1042378:MainThread](2025-12-19 16:53:59,385) INFO - qlib.timer - [log.py:127] - Time cost: 11.390s | Loading data Done
+[1042378:MainThread](2025-12-19 16:54:00,928) INFO - qlib.timer - [log.py:127] - Time cost: 0.991s | RobustZScoreNorm Done
+[1042378:MainThread](2025-12-19 16:54:01,110) INFO - qlib.timer - [log.py:127] - Time cost: 0.181s | Fillna Done
+[1042378:MainThread](2025-12-19 16:54:01,957) INFO - qlib.timer - [log.py:127] - Time cost: 0.286s | DropnaLabel Done
+[1042378:MainThread](2025-12-19 16:54:04,005) INFO - qlib.timer - [log.py:127] - Time cost: 2.040s | CSZScoreNorm Done
+[1042378:MainThread](2025-12-19 16:54:04,009) INFO - qlib.timer - [log.py:127] - Time cost: 4.623s | fit & process data Done
+[1042378:MainThread](2025-12-19 16:54:04,010) INFO - qlib.timer - [log.py:127] - Time cost: 16.019s | Init data Done
+[1042378:MainThread](2025-12-19 16:54:06,449) INFO - qlib.GRU - [pytorch_gru_ts.py:270] - training...
+[1042378:MainThread](2025-12-19 16:54:06,450) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch0:
+[1042378:MainThread](2025-12-19 16:54:06,451) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+ModuleNotFoundError. CatBoostModel are skipped. (optional: maybe installing CatBoostModel can fix it.)
+ModuleNotFoundError. XGBModel is skipped(optional: maybe installing xgboost can fix it).
+[1042378:MainThread](2025-12-19 16:54:28,572) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:54:44,713) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.993774, valid -0.977099
+[1042378:MainThread](2025-12-19 16:54:44,721) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch1:
+[1042378:MainThread](2025-12-19 16:54:44,722) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 16:55:06,327) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:55:24,000) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.989829, valid -0.978528
+[1042378:MainThread](2025-12-19 16:55:24,000) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch2:
+[1042378:MainThread](2025-12-19 16:55:24,001) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 16:55:43,889) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:55:59,237) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.988685, valid -0.981732
+[1042378:MainThread](2025-12-19 16:55:59,238) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch3:
+[1042378:MainThread](2025-12-19 16:55:59,239) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 16:56:18,458) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:56:40,315) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.986123, valid -0.980860
+[1042378:MainThread](2025-12-19 16:56:40,316) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch4:
+[1042378:MainThread](2025-12-19 16:56:40,316) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 16:56:58,534) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:57:19,356) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.979646, valid -0.979219
+[1042378:MainThread](2025-12-19 16:57:19,357) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch5:
+[1042378:MainThread](2025-12-19 16:57:19,357) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 16:57:37,793) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:57:59,285) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.975457, valid -0.978556
+[1042378:MainThread](2025-12-19 16:57:59,286) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch6:
+[1042378:MainThread](2025-12-19 16:57:59,286) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 16:58:17,731) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:58:38,245) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.966884, valid -0.979529
+[1042378:MainThread](2025-12-19 16:58:38,246) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch7:
+[1042378:MainThread](2025-12-19 16:58:38,246) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 16:58:56,251) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:59:17,950) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.949927, valid -1.005041
+[1042378:MainThread](2025-12-19 16:59:17,951) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch8:
+[1042378:MainThread](2025-12-19 16:59:17,952) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 16:59:36,671) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 16:59:57,004) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.941358, valid -0.999542
+[1042378:MainThread](2025-12-19 16:59:57,004) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch9:
+[1042378:MainThread](2025-12-19 16:59:57,004) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 17:00:14,553) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 17:00:34,377) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.911823, valid -0.981051
+[1042378:MainThread](2025-12-19 17:00:34,377) INFO - qlib.GRU - [pytorch_gru_ts.py:274] - Epoch10:
+[1042378:MainThread](2025-12-19 17:00:34,378) INFO - qlib.GRU - [pytorch_gru_ts.py:275] - training...
+[1042378:MainThread](2025-12-19 17:00:51,808) INFO - qlib.GRU - [pytorch_gru_ts.py:277] - evaluating...
+[1042378:MainThread](2025-12-19 17:01:12,137) INFO - qlib.GRU - [pytorch_gru_ts.py:280] - train -0.888341, valid -0.985864
+[1042378:MainThread](2025-12-19 17:01:12,138) INFO - qlib.GRU - [pytorch_gru_ts.py:292] - early stop
+[1042378:MainThread](2025-12-19 17:01:12,138) INFO - qlib.GRU - [pytorch_gru_ts.py:295] - best score: -0.977099 @ 0
+[1042378:MainThread](2025-12-19 17:01:15,599) INFO - qlib.fill_placeholder - [__init__.py:798] - <PRED> lookes like a placeholder, but it can't match to any given values
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+[1042378:MainThread](2025-12-19 17:01:20,055) INFO - qlib.workflow - [record_temp.py:198] - Signal record 'pred.pkl' has been saved as the artifact of the Experiment 948686977992697904
+'The following are prediction results of the GRU model.'
+                          score
+datetime   instrument          
+2024-02-19 801011.SI   0.080685
+2024-02-20 801011.SI   0.086805
+2024-02-21 801011.SI   0.085233
+2024-02-22 801011.SI   0.098907
+2024-02-23 801011.SI   0.116517
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 72.56it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 71.71it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 60.96it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 60.45it/s]
+{'IC': np.float64(0.01713462549622514),
+ 'ICIR': np.float64(0.08377833856512902),
+ 'Rank IC': np.float64(0.02855176166634462),
+ 'Rank ICIR': np.float64(0.1274433463462136)}
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]
+Downloading artifacts:   0%|          | 0/1 [00:00<?, ?it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 203.20it/s]Downloading artifacts: 100%|██████████| 1/1 [00:00<00:00, 198.38it/s]
+[1042378:MainThread](2025-12-19 17:01:20,485) INFO - qlib.backtest caller - [__init__.py:93] - Create new exchange
+[1042378:MainThread](2025-12-19 17:01:27,432) WARNING - qlib.online operator - [exchange.py:226] - factor.day.bin file not exists or factor contains `nan`. Order using adjusted_price.
+[1042378:MainThread](2025-12-19 17:01:27,433) WARNING - qlib.online operator - [exchange.py:228] - trade unit 100 is not supported in adjusted_price mode.
+[1042378:MainThread](2025-12-19 17:01:27,891) WARNING - qlib.data - [data.py:665] - load calendar error: freq=day, future=True; return current calendar!
+[1042378:MainThread](2025-12-19 17:01:27,891) WARNING - qlib.data - [data.py:668] - You can get future calendar by referring to the following document: https://github.com/microsoft/qlib/blob/main/scripts/data_collector/contrib/README.md
+[1042378:MainThread](2025-12-19 17:01:27,894) WARNING - qlib.BaseExecutor - [executor.py:121] - `common_infra` is not set for <qlib.backtest.executor.SimulatorExecutor object at 0x75f774172ce0>
+backtest loop:   0%|          | 0/313 [00:00<?, ?it/s]/z5s/morph/home/ljf/qlib/qlib/utils/index_data.py:492: RuntimeWarning: Mean of empty slice
+  return np.nanmean(self.data)
+backtest loop:   4%|▍         | 12/313 [00:00<00:02, 117.86it/s]backtest loop:   8%|▊         | 25/313 [00:00<00:02, 121.40it/s]backtest loop:  12%|█▏        | 38/313 [00:00<00:02, 116.41it/s]backtest loop:  16%|█▌        | 50/313 [00:00<00:02, 113.66it/s]backtest loop:  20%|██        | 63/313 [00:00<00:02, 116.89it/s]backtest loop:  24%|██▍       | 75/313 [00:00<00:02, 116.38it/s]backtest loop:  28%|██▊       | 89/313 [00:00<00:01, 121.94it/s]/z5s/morph/home/ljf/qlib/qlib/utils/index_data.py:492: RuntimeWarning: Mean of empty slice
+  return np.nanmean(self.data)
+backtest loop:  33%|███▎      | 104/313 [00:00<00:01, 125.94it/s]backtest loop:  38%|███▊      | 118/313 [00:00<00:01, 128.36it/s]backtest loop:  42%|████▏     | 131/313 [00:01<00:01, 124.47it/s]backtest loop:  46%|████▌     | 144/313 [00:01<00:01, 122.44it/s]backtest loop:  50%|█████     | 157/313 [00:01<00:01, 116.42it/s]backtest loop:  54%|█████▍    | 170/313 [00:01<00:01, 119.16it/s]backtest loop:  58%|█████▊    | 182/313 [00:01<00:01, 117.46it/s]backtest loop:  63%|██████▎   | 196/313 [00:01<00:00, 122.09it/s]backtest loop:  67%|██████▋   | 209/313 [00:01<00:00, 118.39it/s]backtest loop:  71%|███████   | 221/313 [00:01<00:00, 114.94it/s]backtest loop:  74%|███████▍  | 233/313 [00:01<00:00, 116.11it/s]backtest loop:  79%|███████▊  | 246/313 [00:02<00:00, 119.72it/s]backtest loop:  83%|████████▎ | 259/313 [00:02<00:00, 118.12it/s]backtest loop:  87%|████████▋ | 271/313 [00:02<00:00, 117.62it/s]backtest loop:  90%|█████████ | 283/313 [00:02<00:00, 109.44it/s]backtest loop:  94%|█████████▍| 295/313 [00:02<00:00, 98.24it/s] backtest loop:  98%|█████████▊| 306/313 [00:02<00:00, 84.48it/s]backtest loop: 100%|██████████| 313/313 [00:02<00:00, 110.66it/s]
+[1042378:MainThread](2025-12-19 17:01:30,756) INFO - qlib.workflow - [record_temp.py:515] - Portfolio analysis record 'port_analysis_1day.pkl' has been saved as the artifact of the Experiment 948686977992697904
+[1042378:MainThread](2025-12-19 17:01:30,768) INFO - qlib.workflow - [record_temp.py:540] - Indicator analysis record 'indicator_analysis_1day.pkl' has been saved as the artifact of the Experiment 948686977992697904
+[1042378:MainThread](2025-12-19 17:01:31,026) INFO - qlib.timer - [log.py:127] - Time cost: 0.000s | waiting `async_log` Done
+'The following are analysis results of benchmark return(1day).'
+                       risk
+mean               0.000765
+std                0.018797
+annualized_return  0.182187
+information_ratio  0.628250
+max_drawdown      -0.301693
+'The following are analysis results of the excess return without cost(1day).'
+                       risk
+mean               0.000410
+std                0.005510
+annualized_return  0.097613
+information_ratio  1.148333
+max_drawdown      -0.059723
+'The following are analysis results of the excess return with cost(1day).'
+                       risk
+mean               0.000270
+std                0.005507
+annualized_return  0.064273
+information_ratio  0.756504
+max_drawdown      -0.064887
+'The following are analysis results of indicators(1day).'
+     value
+ffr    1.0
+pa     0.0
+pos    0.0

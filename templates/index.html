@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}">
+    <title>股票分析系统</title>
+</head>
+<body class="dashboard-page">
+    <header class="top-nav">
+        <div class="brand">📈 股票分析系统</div>
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}">首页</a>
+            <a href="{{ url_for('stock_list') }}">股票列表</a>
+            <a href="{{ url_for('trend_predict') }}">趋势预测</a>
+            <a href="{{ url_for('stock_screener') }}">智能分析</a>
+            <a href="{{ url_for('backtest_page') }}">策略回测</a>
+            <a href="{{ url_for('tutorial') }}">系统说明</a>
+        </nav>
+        <div class="nav-actions">
+            <span class="status-pill">已登录</span>
+            <a href="{{ url_for('logout') }}" class="ghost-link">退出</a>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <section class="hero-banner">
+            <h1>📈 股票分析系统</h1>
+            <p>基于 Flask 的行业与指数分析平台，提供股票列表检索、历史行情查看、技术因子分析与筛选能力。</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('stock_list') }}" class="primary-btn">开始分析</a>
+                <a href="{{ url_for('stock_screener') }}" class="outline-btn">智能分析</a>
+            </div>
+        </section>
+
+        <section class="section-title-wrap" id="core-functions">
+            <h2>🚀 核心功能</h2>
+        </section>
+
+        <section class="feature-grid">
+            <article class="feature-card">
+                <div class="feature-icon">☰</div>
+                <h3>股票列表</h3>
+                <p>浏览和搜索股票代码与名称，快速定位目标标的。</p>
+                <a href="{{ url_for('stock_list') }}" class="feature-btn blue">查看列表</a>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">📉</div>
+                <h3>趋势预测</h3>
+                <p>按模型与特征模式配置训练和短期趋势预测。</p>
+                <a href="{{ url_for('trend_predict') }}" class="feature-btn green">趋势预测</a>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">↺</div>
+                <h3>策略回测</h3>
+                <p>基于历史行情和因子数据，验证策略思路。</p>
+                <a href="{{ url_for('backtest_page') }}" class="feature-btn cyan">开始回测</a>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">🔎</div>
+                <h3>智能分析</h3>
+                <p>通过名称或代码快速过滤，定位行业与指数条目。</p>
+                <a href="{{ url_for('stock_screener') }}" class="feature-btn amber">开始筛选</a>
+            </article>
+        </section>
+    </main>
+</body>
+</html>

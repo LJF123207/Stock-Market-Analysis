@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}">
+    <title>策略回测</title>
+</head>
+<body class="has-nav">
+    <header class="top-nav">
+        <div class="brand">📈 股票分析系统</div>
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}">首页</a>
+            <a href="{{ url_for('stock_list') }}">股票列表</a>
+            <a href="{{ url_for('trend_predict') }}">趋势预测</a>
+            <a href="{{ url_for('backtest_page') }}">策略回测</a>
+            <a href="{{ url_for('stock_screener') }}">智能分析</a>
+            <a href="{{ url_for('tutorial') }}">系统说明</a>
+        </nav>
+        <div class="nav-actions">
+            <span class="status-pill">已登录</span>
+            <a href="{{ url_for('logout') }}" class="ghost-link">退出</a>
+        </div>
+    </header>
+
+    <div class="container page-block">
+        <h1>策略回测</h1>
+        <p>配置时间区间、策略参数并执行回测，实时查看日志与结果。</p>
+
+        <form method="POST" action="{{ url_for('backtest_page') }}" class="screener-form">
+            <div class="trend-grid">
+                <div>
+                    <label for="keyword">股票池（代码/名称）</label>
+                    <input id="keyword" name="keyword" placeholder="留空表示全部" value="{{ form_data.keyword }}">
+                </div>
+                <div>
+                    <label for="model">模型选择</label>
+                    <select id="model" name="model">
+                        {% for key, label in model_options %}
+                        <option value="{{ key }}" {{ 'selected' if form_data.model == key else '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="mode">策略类型</label>
+                    <select id="mode" name="mode">
+                        {% for key, label in mode_options %}
+                        <option value="{{ key }}" {{ 'selected' if form_data.mode == key else '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="start_date">回测开始日期</label>
+                    <input id="start_date" name="start_date" type="date" value="{{ form_data.start_date }}">
+                </div>
+                <div>
+                    <label for="end_date">回测结束日期</label>
+                    <input id="end_date" name="end_date" type="date" value="{{ form_data.end_date }}">
+                </div>
+                <div>
+                    <label for="topk">买入数量（topk）</label>
+                    <input id="topk" name="topk" type="number" min="1" step="1" value="{{ form_data.topk }}">
+                </div>
+                <div>
+                    <label for="n_drop">日调仓卖出数量（n_drop）</label>
+                    <input id="n_drop" name="n_drop" type="number" min="0" step="1" value="{{ form_data.n_drop }}">
+                </div>
+                <div>
+                    <label for="method_buy">买入方式</label>
+                    <select id="method_buy" name="method_buy">
+                        {% for key, label in buy_method_options %}
+                        <option value="{{ key }}" {{ 'selected' if form_data.method_buy == key else '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="method_sell">卖出方式</label>
+                    <select id="method_sell" name="method_sell">
+                        {% for key, label in sell_method_options %}
+                        <option value="{{ key }}" {{ 'selected' if form_data.method_sell == key else '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="hold_thresh">最小持有天数（hold_thresh）</label>
+                    <input id="hold_thresh" name="hold_thresh" type="number" min="1" step="1" value="{{ form_data.hold_thresh }}">
+                </div>
+                <div>
+                    <label for="account">初始资金</label>
+                    <input id="account" name="account" type="number" min="1" step="1" value="{{ form_data.account }}">
+                </div>
+                <div>
+                    <label for="open_cost">开仓成本</label>
+                    <input id="open_cost" name="open_cost" type="number" min="0" step="0.000001" value="{{ form_data.open_cost }}">
+                </div>
+                <div>
+                    <label for="close_cost">平仓成本</label>
+                    <input id="close_cost" name="close_cost" type="number" min="0" step="0.000001" value="{{ form_data.close_cost }}">
+                </div>
+                <div>
+                    <label for="min_cost">最小手续费</label>
+                    <input id="min_cost" name="min_cost" type="number" min="0" step="0.01" value="{{ form_data.min_cost }}">
+                </div>
+                <div>
+                    <label for="fusion_type">融合方式</label>
+                    <select id="fusion_type" name="fusion_type">
+                        {% for key, label in fusion_options %}
+                        <option value="{{ key }}" {{ 'selected' if form_data.fusion_type == key else '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div id="layerWrap">
+                    <label for="layer_num">融合层数</label>
+                    <input id="layer_num" name="layer_num" type="number" min="1" max="12" step="1" value="{{ form_data.layer_num }}">
+                </div>
+                <div>
+                    <label><input type="checkbox" name="only_tradable" {{ 'checked' if form_data.only_tradable else '' }}> 仅交易可交易标的</label>
+                </div>
+                <div>
+                    <label><input type="checkbox" name="forbid_all_trade_at_limit" {{ 'checked' if form_data.forbid_all_trade_at_limit else '' }}> 涨跌停时禁止全部交易</label>
+                </div>
+            </div>
+            <div class="auth-links">
+                <button type="submit">执行回测</button>
+            </div>
+        </form>
+
+        {% if action_result %}
+        <section class="factor-panel trend-result">
+            <div class="panel-title">执行状态</div>
+            <div class="trend-result-body">
+                <p>{{ action_result.summary }}</p>
+                {% if action_result.command_hint %}
+                <p class="hint-note"><code>{{ action_result.command_hint }}</code></p>
+                {% endif %}
+                {% if action_result.extra %}
+                <p class="hint-note">{{ action_result.extra }}</p>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="factor-panel">
+            <div class="panel-title">回测任务</div>
+            <div class="table-container finance-table-wrap">
+                <table class="finance-table">
+                    <thead>
+                        <tr>
+                            <th>任务ID</th>
+                            <th>模型</th>
+                            <th>模式</th>
+                            <th>股票池</th>
+                            <th>回测区间</th>
+                            <th>topk/n_drop</th>
+                            <th>买卖方式</th>
+                            <th>状态</th>
+                            <th>创建时间</th>
+                            <th>日志</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for j in jobs %}
+                        <tr>
+                            <td>{{ j.id }}</td>
+                            <td>{{ j.model }}</td>
+                            <td>{{ j.mode }}</td>
+                            <td>{{ j.keyword }}</td>
+                            <td>{{ j.start_date }} ~ {{ j.end_date }}</td>
+                            <td>{{ j.topk }}/{{ j.n_drop }}</td>
+                            <td>{{ j.method_buy }}/{{ j.method_sell }}</td>
+                            <td>{{ j.status }}</td>
+                            <td>{{ j.created_at }}</td>
+                            <td><code>{{ j.log_path }}</code></td>
+                            <td><a class="btn" href="{{ url_for('backtest_page', job_id=j.id) }}">查看</a></td>
+                        </tr>
+                        {% endfor %}
+                        {% if not jobs %}
+                        <tr><td colspan="11">暂无回测任务。</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="factor-panel">
+            <div class="panel-title">实时日志{% if selected_job_id %}（{{ selected_job_id }}）{% endif %}</div>
+            <pre id="btLog" class="log-box">{{ log_text }}</pre>
+        </section>
+
+        {% if metrics %}
+        <section class="factor-panel">
+            <div class="panel-title">回测指标</div>
+            <div class="metric-grid">
+                <div class="metric-card"><span>累计收益率</span><strong>{{ metrics['累计收益率'] }}%</strong></div>
+                <div class="metric-card"><span>年化收益率</span><strong>{{ metrics['年化收益率'] }}%</strong></div>
+                <div class="metric-card"><span>最大回撤</span><strong>{{ metrics['最大回撤'] }}%</strong></div>
+                <div class="metric-card"><span>Sharpe比率</span><strong>{{ metrics['Sharpe比率'] if metrics['Sharpe比率'] is not none else '-' }}</strong></div>
+                <div class="metric-card"><span>波动率(年化)</span><strong>{{ metrics['波动率(年化)'] }}%</strong></div>
+                <div class="metric-card"><span>胜率</span><strong>{{ metrics['胜率'] }}%</strong></div>
+            </div>
+        </section>
+        {% endif %}
+
+        {% if backtest_chart %}
+        <section class="factor-panel">
+            <div class="panel-title">回测可视化</div>
+            <div class="chart-shell">
+                <div id="cumChart" class="chart-box" style="height: 340px;"></div>
+                <div id="ddChart" class="chart-box" style="height: 260px; margin-top: 16px;"></div>
+                <div id="retChart" class="chart-box" style="height: 260px; margin-top: 16px;"></div>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+
+    {% if selected_job_id or backtest_chart %}
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    {% endif %}
+    <script>
+    (function () {
+        const mode = document.getElementById("mode");
+        const fusion = document.getElementById("fusion_type");
+        const layerWrap = document.getElementById("layerWrap");
+        const layer = document.getElementById("layer_num");
+        function refreshFusionUI() {
+            const isTechNews = mode.value === "tech_news";
+            const needLayer = isTechNews && (fusion.value === "crossattn" || fusion.value === "decoder");
+            fusion.disabled = !isTechNews;
+            layer.disabled = !needLayer;
+            layerWrap.style.display = needLayer ? "block" : "none";
+        }
+        mode.addEventListener("change", refreshFusionUI);
+        fusion.addEventListener("change", refreshFusionUI);
+        refreshFusionUI();
+    })();
+    </script>
+    {% if selected_job_id and selected_job_running %}
+    <script>
+    (function () {
+        const logNode = document.getElementById("btLog");
+        if (!logNode) return;
+        const jobId = {{ selected_job_id|tojson }};
+        const endpoint = {{ url_for('backtest_job_log', job_id='__ID__')|tojson }}.replace("__ID__", jobId);
+        let timer = null;
+        function poll() {
+            fetch(endpoint, { cache: "no-store" })
+                .then(function (resp) { return resp.json(); })
+                .then(function (data) {
+                    if (!data || !data.ok) return;
+                    logNode.textContent = data.log || "";
+                    logNode.scrollTop = logNode.scrollHeight;
+                    const doneWithResult = data.status === "success" && !!data.has_result;
+                    const failed = data.status === "failed";
+                    if (doneWithResult || failed) {
+                        if (timer) clearInterval(timer);
+                        if (doneWithResult) {
+                            const nextUrl = new URL(window.location.href);
+                            nextUrl.searchParams.set("job_id", jobId);
+                            window.location.href = nextUrl.toString();
+                        }
+                    }
+                })
+                .catch(function () {});
+        }
+        poll();
+        timer = setInterval(poll, 2000);
+    })();
+    </script>
+    {% endif %}
+    {% if backtest_chart %}
+    <script>
+    (function () {
+        if (typeof echarts === "undefined") return;
+        const data = {{ backtest_chart | tojson }};
+        function makeLineChart(id, title, series) {
+            const node = document.getElementById(id);
+            if (!node) return null;
+            const chart = echarts.init(node);
+            chart.setOption({
+                animation: false,
+                title: { text: title, left: 10, top: 6, textStyle: { fontSize: 14 } },
+                tooltip: { trigger: "axis" },
+                legend: { top: 6, right: 12, data: series.map(function (s) { return s.name; }) },
+                grid: { left: 56, right: 26, top: 38, bottom: 46 },
+                xAxis: { type: "category", data: data.labels || [] },
+                yAxis: { type: "value", scale: true },
+                dataZoom: [{ type: "inside" }, { type: "slider", height: 18, bottom: 12 }],
+                series: series
+            });
+            return chart;
+        }
+        const charts = [];
+        charts.push(makeLineChart("cumChart", "累计收益曲线", [
+            { name: "策略累计收益", type: "line", smooth: true, showSymbol: false, data: data.strategy_cum || [] },
+            { name: "基准累计收益", type: "line", smooth: true, showSymbol: false, data: data.benchmark_cum || [] }
+        ]));
+        charts.push(makeLineChart("ddChart", "回撤曲线", [
+            { name: "最大回撤", type: "line", smooth: true, showSymbol: false, data: data.drawdown || [] }
+        ]));
+        charts.push(makeLineChart("retChart", "日收益率", [
+            { name: "日收益率", type: "bar", data: data.daily_return || [] }
+        ]));
+        window.addEventListener("resize", function () {
+            charts.forEach(function (c) { if (c) c.resize(); });
+        });
+    })();
+    </script>
+    {% endif %}
+</body>
+</html>

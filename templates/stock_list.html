@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}">
+    <title>股票列表</title>
+</head>
+<body class="has-nav">
+    <header class="top-nav">
+        <div class="brand">📈 股票分析系统</div>
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}">首页</a>
+            <a href="{{ url_for('stock_list') }}">股票列表</a>
+            <a href="{{ url_for('trend_predict') }}">趋势预测</a>
+            <a href="{{ url_for('backtest_page') }}">策略回测</a>
+            <a href="{{ url_for('stock_screener') }}">智能分析</a>
+            <a href="{{ url_for('tutorial') }}">系统说明</a>
+        </nav>
+        <div class="nav-actions">
+            {% if session.get('username') %}
+            <span class="status-pill">已登录</span>
+            <a href="{{ url_for('logout') }}" class="ghost-link">退出</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="ghost-link">登录</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container page-block">
+        <h1>股票列表</h1>
+        <p>支持按股票代码或股票类别搜索。</p>
+
+        <div class="form-cont">
+            <form method="GET" action="{{ url_for('stock_list') }}">
+                <label for="keyword">股票类别 / 股票代码</label>
+                <div class="cd">
+                    <input type="text" id="keyword" name="keyword" value="{{ keyword }}" placeholder="例如：801193.SI 或 证券Ⅱ">
+                    <button type="submit">搜索</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container finance-table-wrap">
+            <table class="finance-table">
+                <thead>
+                    <tr>
+                        <th>股票代码</th>
+                        <th>股票类别</th>
+                        <th>详情</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in stocks %}
+                    <tr>
+                        <td>{{ stock.code }}</td>
+                        <td>{{ stock.name }}</td>
+                        <td><a href="{{ url_for('stock_detail', stock_code=stock.code) }}">查看详情</a></td>
+                    </tr>
+                    {% endfor %}
+                    {% if not stocks %}
+                    <tr>
+                        <td colspan="3">未找到匹配结果。</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
